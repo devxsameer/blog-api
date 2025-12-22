@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   pgEnum,
   pgTable,
@@ -17,9 +18,29 @@ export const usersTable = pgTable(
     id: uuid().primaryKey().defaultRandom(),
     username: varchar({ length: 32 }).notNull(),
     email: text().notNull().unique(),
-    role: roleEnum().default("user").notNull(),
     passwordHash: text("password_hash").notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
+
+    role: roleEnum().default("user").notNull(),
+
+    bio: text("bio"),
+    avatarUrl: text("avatar_url"),
+
+    emailVerifiedAt: timestamp("email_verified_at", {
+      withTimezone: true,
+    }),
+
+    isActive: boolean("is_active").notNull().default(true),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    }).defaultNow(),
+
+    updatedAt: timestamp("updated_at", {
+      withTimezone: true,
+    }).defaultNow(),
+    deletedAt: timestamp("deleted_at", {
+      withTimezone: true,
+    }),
   },
   (table) => [
     uniqueIndex("users_email_idx").on(table.email),

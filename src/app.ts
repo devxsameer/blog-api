@@ -18,10 +18,6 @@ app.use(express.json());
 app.use(httpLogger);
 
 /* -------------------- ROUTES -------------------- */
-app.route("/").get((req, res, next) => {
-  res.json("Hello from Blog API");
-});
-
 app.use("/auth", authRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {

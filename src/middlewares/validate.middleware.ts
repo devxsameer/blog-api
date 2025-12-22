@@ -4,6 +4,12 @@ import { ZodObject } from "zod";
 
 export const validate =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
-    schema.parse({ body: req.body, params: req.params, query: req.query });
+    const parsed = schema.parse({
+      body: req.body,
+      params: req.params,
+      query: req.query,
+    });
+
+    req.validated = parsed;
     next();
   };
