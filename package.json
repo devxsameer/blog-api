@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias",
-    "start": "NODE_ENV=production node dist/server.js"
+    "start": "NODE_ENV=production node dist/server.js",
+    "db:generate": "tsx ./node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "tsx ./node_modules/drizzle-kit/bin.cjs migrate",
+    "db:push": "tsx ./node_modules/drizzle-kit/bin.cjs push",
+    "db:studio": "tsx ./node_modules/drizzle-kit/bin.cjs studio",
+    "db:check": "tsx ./node_modules/drizzle-kit/bin.cjs check"
   },
   "keywords": [],
   "author": "Sameer Ali",
@@ -29,6 +34,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.16.3",
+    "pino": "^10.1.0",
     "zod": "^4.2.1"
   }
 }

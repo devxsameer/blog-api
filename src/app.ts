@@ -1,7 +1,10 @@
 // src/app.ts
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+
+import authRoutes from "./modules/auth/auth.routes.js";
+import { globalErrorHandler } from "./middlewares/error.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,3 +18,17 @@ app.use(express.json());
 app.route("/").get((req, res, next) => {
   res.json("Hello from Blog API");
 });
+
+app.use("/auth", authRoutes);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json({
+    success: false,
+    error: {
+      code: "NOT_FOUND",
+      message: "Route not found",
+    },
+  });
+});
+
+app.use(globalErrorHandler);
