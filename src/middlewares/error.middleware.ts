@@ -1,5 +1,6 @@
 // src/middlewares/error.middleware.ts
 import { AppError } from "@/errors/app-error.js";
+import { logger } from "@/utils/logger.js";
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 
@@ -36,7 +37,15 @@ export function globalErrorHandler(
   }
 
   // Unknown / Programmer Errors
-  console.error("💥 UNHANDLED ERROR:", err);
+  logger.error(
+    {
+      err,
+      requestId: req.id,
+      path: req.path,
+      method: req.method,
+    },
+    "Unhandled error"
+  );
 
   return res.status(500).json({
     success: false,
