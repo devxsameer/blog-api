@@ -1,5 +1,5 @@
-// src/errors/app-error.ts
-export class AppError extends Error {
+// src/errors/api-error.ts
+export class ApiError extends Error {
   readonly statusCode: number;
   readonly code: string;
   readonly isOperational: boolean;

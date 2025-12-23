@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./modules/auth/auth.routes.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
 import { httpLogger, requestId } from "./middlewares/logger.middleware.js";
+import { NotFoundError } from "./errors/http-errors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,13 +22,7 @@ app.use(httpLogger);
 app.use("/auth", authRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json({
-    success: false,
-    error: {
-      code: "NOT_FOUND",
-      message: "Route not found",
-    },
-  });
+  next(new NotFoundError("Route"));
 });
 
 app.use(globalErrorHandler);

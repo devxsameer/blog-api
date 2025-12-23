@@ -1,5 +1,5 @@
 // src/middlewares/error.middleware.ts
-import { AppError } from "@/errors/app-error.js";
+import { ApiError } from "@/errors/api-error.js";
 import { logger } from "@/utils/logger.js";
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
@@ -26,7 +26,7 @@ export function globalErrorHandler(
   }
 
   // Known App Errors
-  if (err instanceof AppError) {
+  if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       success: false,
       error: {

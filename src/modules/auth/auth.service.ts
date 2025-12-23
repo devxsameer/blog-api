@@ -1,7 +1,7 @@
 // src/modules/auth/auth.service.ts
 import { signAccessToken, signRefreshToken } from "@/utils/jwt.js";
 import * as AuthRepo from "./auth.repository.js";
-import { AppError } from "@/errors/app-error.js";
+import { ApiError } from "@/errors/api-error.js";
 import crypto from "node:crypto";
 import { hashPassword } from "@/utils/password.js";
 
@@ -13,7 +13,7 @@ export async function signup(
   const existing = await AuthRepo.findUserByEmail(email);
 
   if (existing.length) {
-    throw new AppError(
+    throw new ApiError(
       "An account with this email already exists.",
       409,
       "EMAIL_ALREADY_EXISTS"
