@@ -34,7 +34,7 @@ export function saveRefreshToken(data: {
   return db.insert(refreshTokensTable).values(data).returning();
 }
 
-export function findRefreshToken(tokenHash: string) {
+export function findValidRefreshToken(tokenHash: string) {
   return db
     .select()
     .from(refreshTokensTable)
@@ -47,11 +47,11 @@ export function findRefreshToken(tokenHash: string) {
     .limit(1);
 }
 
-export function revokeRefreshToken(id: string) {
+export function revokeRefreshToken(tokenHash: string) {
   return db
     .update(refreshTokensTable)
     .set({ revokedAt: new Date() })
-    .where(eq(refreshTokensTable.id, id));
+    .where(eq(refreshTokensTable.tokenHash, tokenHash));
 }
 
 export function revokeAllUserTokens(userId: string) {

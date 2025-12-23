@@ -9,5 +9,5 @@ export function sendResponse(
     meta = null,
   }: { statusCode?: number; message?: string; data?: any; meta?: any }
 ) {
-  return res.status(statusCode).json({ success: "true", message, data, meta });
+  return res.status(statusCode).json({ success: true, message, data, meta });
 }

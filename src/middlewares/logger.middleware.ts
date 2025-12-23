@@ -31,7 +31,7 @@ export const httpLogger = pinoHttp({
 export function requestId(req: Request, res: Response, next: NextFunction) {
   const id = randomUUID();
 
-  req.id = id;
+  req.requestId = id;
   res.setHeader("X-Request-Id", id);
 
   next();

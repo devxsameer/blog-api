@@ -40,7 +40,7 @@ export function globalErrorHandler(
   logger.error(
     {
       err,
-      requestId: req.id,
+      requestId: req.requestId,
       path: req.path,
       method: req.method,
     },

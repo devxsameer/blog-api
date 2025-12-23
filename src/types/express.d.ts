@@ -1,14 +1,19 @@
 // src/types/express.d.ts
+export {};
+
 declare global {
   namespace Express {
     interface Request {
-      id: string;
+      requestId?: string;
       validated?: {
-        body?: unknown;
-        params?: unknown;
-        query?: unknown;
+        body?: any;
+        params?: any;
+        query?: any;
+      };
+      user?: {
+        id: string;
+        role: string;
       };
     }
   }
 }
-export {};

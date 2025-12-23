@@ -1,9 +1,14 @@
 // src/modules/auth/auth.service.ts
-import { signAccessToken, signRefreshToken } from "@/utils/jwt.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "@/utils/jwt.js";
 import * as AuthRepo from "./auth.repository.js";
 import { ApiError } from "@/errors/api-error.js";
 import crypto from "node:crypto";
-import { hashPassword } from "@/utils/password.js";
+import { hashPassword, verifyPassword } from "@/utils/password.js";
+import { UnauthorizedError } from "@/errors/http-errors.js";
 
 export async function signup(
   username: string,
@@ -23,8 +28,60 @@ export async function signup(
   const passwordHash = await hashPassword(password);
 
   const [user] = await AuthRepo.createUser({ username, email, passwordHash });
+  const tokens = await issueTokens(user.id, user.role);
 
-  return issueTokens(user.id, user.role);
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    },
+    tokens,
+  };
+}
+
+export async function login(email: string, password: string) {
+  const [user] = await AuthRepo.findUserByEmail(email);
+
+  // Even if user is null, we verify against a dummy hash to prevent timing attacks.
+  const passwordHash = user
+    ? user.passwordHash
+    : "$argon2id$v=19$m=64,t=3,p=1$OGNBTDk2TnhDam1MVzlSZQ$OwdkEUnPMH+OLJERLQzi7Q";
+  const valid = await verifyPassword(passwordHash, password);
+
+  if (!user || !valid) {
+    throw new UnauthorizedError("Invalid email or password");
+  }
+
+  const tokens = await issueTokens(user.id, user.role);
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    },
+    tokens,
+  };
+}
+
+export async function refresh(refreshToken: string) {
+  const payload = verifyRefreshToken(refreshToken);
+  const tokenHash = hashToken(refreshToken);
+
+  const [stored] = await AuthRepo.findValidRefreshToken(tokenHash);
+
+  if (!stored) throw new UnauthorizedError();
+
+  await AuthRepo.revokeRefreshToken(tokenHash);
+
+  return issueTokens(payload.sub, undefined);
+}
+
+export async function logout(userId: string) {
+  await AuthRepo.revokeAllUserTokens(userId);
 }
 
 function hashToken(token: string) {
