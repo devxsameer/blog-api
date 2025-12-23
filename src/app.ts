@@ -3,9 +3,12 @@ import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import authRoutes from "./modules/auth/auth.routes.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
 import { httpLogger, requestId } from "./middlewares/logger.middleware.js";
+
+import authRoutes from "./modules/auth/auth.routes.js";
+import postRoutes from "./modules/post/blog.routes.js";
+
 import { NotFoundError } from "./errors/http-errors.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +23,7 @@ app.use(httpLogger);
 
 /* -------------------- ROUTES -------------------- */
 app.use("/auth", authRoutes);
+app.use("/posts", postRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError("Route"));
