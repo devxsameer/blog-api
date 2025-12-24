@@ -1,5 +1,7 @@
-import { AuthUser } from "./auth";
 // src/types/express.d.ts
+import { AuthUser } from "./auth.ts";
+import "express";
+
 export {};
 
 declare global {

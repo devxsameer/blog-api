@@ -3,7 +3,7 @@ import { verifyAccessToken } from "@/utils/jwt.js";
 import { ForbiddenError, UnauthorizedError } from "@/errors/http-errors.js";
 import type { RequestHandler } from "express";
 import { Request } from "express";
-import { Role } from "@/types/auth.js";
+import { Role } from "@/@types/auth.js";
 
 /* ---------------- AUTH ---------------- */
 

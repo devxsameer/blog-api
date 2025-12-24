@@ -1,6 +1,6 @@
 // src/utils/jwt.ts
 import { env } from "@/env.js";
-import { Role } from "@/types/auth.js";
+import { Role } from "@/@types/auth.js";
 import jwt from "jsonwebtoken";
 
 export function signAccessToken(userId: string, role: string) {
