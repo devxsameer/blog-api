@@ -7,7 +7,7 @@ import { globalErrorHandler } from "./middlewares/error.middleware.js";
 import { httpLogger, requestId } from "./middlewares/logger.middleware.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
-import postRoutes from "./modules/post/blog.routes.js";
+import postRoutes from "./modules/post/post.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
 

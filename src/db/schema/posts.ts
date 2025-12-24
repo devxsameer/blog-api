@@ -5,6 +5,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -50,6 +51,7 @@ export const postsTable = pgTable(
       .defaultNow(),
   },
   (table) => [
+    uniqueIndex("posts_slug_idx").on(table.slug),
     index("posts_author_idx").on(table.authorId),
     index("posts_status_idx").on(table.status),
     index("posts_published_at_idx").on(table.publishedAt.desc()),
