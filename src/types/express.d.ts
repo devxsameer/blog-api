@@ -1,3 +1,4 @@
+import { AuthUser } from "./auth";
 // src/types/express.d.ts
 export {};
 
@@ -10,10 +11,7 @@ declare global {
         params?: any;
         query?: any;
       };
-      user?: {
-        id: string;
-        role: string;
-      };
+      user?: AuthUser;
     }
   }
 }

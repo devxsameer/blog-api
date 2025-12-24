@@ -23,3 +23,9 @@ export class NotFoundError extends ApiError {
     super(`${resource} Not Found`, 404, "NOT_FOUND");
   }
 }
+
+export class ConflictError extends ApiError {
+  constructor(message = "Conflict occurred") {
+    super(message, 409, "CONFLICT");
+  }
+}
