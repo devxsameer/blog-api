@@ -14,7 +14,7 @@ import { NotFoundError } from "./errors/http-errors.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const app = express();
+const app = express();
 
 /* -------------------- CORE MIDDLEWARE -------------------- */
 app.use(requestId);
@@ -30,3 +30,5 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(globalErrorHandler);
+
+export default app;
