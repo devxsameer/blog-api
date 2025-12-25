@@ -1,7 +1,8 @@
 // src/modules/post/post.repository.ts
 import { db } from "@/db/index.js";
+import { postViewsTable } from "@/db/schema/post-views.js";
 import { postsTable } from "@/db/schema/posts.js";
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt, sql } from "drizzle-orm";
 
 export function createPost(data: typeof postsTable.$inferInsert) {
   return db.insert(postsTable).values(data).returning();
@@ -22,7 +23,7 @@ export function updatePostBySlug(
   return db
     .update(postsTable)
     .set(data)
-    .where(eq(postsTable.id, slug))
+    .where(eq(postsTable.slug, slug))
     .returning();
 }
 
@@ -44,4 +45,25 @@ export function findPublishedPostsCursor(limit: number, cursor?: Date) {
     .where(whereClause)
     .orderBy(desc(postsTable.publishedAt))
     .limit(limit + 1);
+}
+
+export async function recordPostView(postId: string, ipAddress: string) {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+
+    await db.transaction(async (tx) => {
+      await tx.insert(postViewsTable).values({
+        postId,
+        ipAddress,
+        viewDate: today,
+      });
+
+      await tx
+        .update(postsTable)
+        .set({ viewCount: sql`${postsTable.viewCount} + 1` })
+        .where(eq(postsTable.id, postId));
+    });
+  } catch {
+    // ignore duplicate views
+  }
 }

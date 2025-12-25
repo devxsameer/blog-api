@@ -1,5 +1,6 @@
 // src/db/schema/post-views.ts
 import {
+  date,
   index,
   inet,
   pgTable,
@@ -21,6 +22,7 @@ export const postViewsTable = pgTable(
 
     ipAddress: inet("ip_address"),
     userAgent: text("user_agent"),
+    viewDate: date("view_date").notNull(),
 
     viewedAt: timestamp("viewed_at", {
       withTimezone: true,
@@ -29,7 +31,11 @@ export const postViewsTable = pgTable(
       .defaultNow(),
   },
   (table) => [
-    index("post_views_post_idx").on(table.id),
-    uniqueIndex("post_views_unique_idx").on(table.postId, table.ipAddress),
+    index("post_views_post_idx").on(table.postId),
+    uniqueIndex("post_views_unique_daily_idx").on(
+      table.postId,
+      table.ipAddress,
+      table.viewDate
+    ),
   ]
 );

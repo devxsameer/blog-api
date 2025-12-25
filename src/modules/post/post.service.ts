@@ -61,13 +61,21 @@ export async function createPost(
   return post;
 }
 
-export async function getPostBySlug(user: AuthUser, slug: string) {
+export async function getPostBySlug(
+  user: AuthUser | null,
+  slug: string,
+  ip: string
+) {
   const [post] = await PostRepo.findPostBySlug(slug);
 
-  if (!post) throw new NotFoundError("Post not found");
+  if (!post) throw new NotFoundError("Post");
 
-  if (!canViewPost(user ?? { id: "", role: "user" }, post)) {
+  if (!canViewPost(user, post)) {
     throw new ForbiddenError("You cannot view this post");
+  }
+
+  if (ip && (!user || user.id !== post.authorId)) {
+    PostRepo.recordPostView(post.id, ip).catch(() => {});
   }
 
   return post;
@@ -86,7 +94,7 @@ export async function updatePost(
   const [post] = await PostRepo.findPostBySlug(slug);
 
   if (!post) {
-    throw new NotFoundError("Post not found");
+    throw new NotFoundError("Post");
   }
 
   if (!canUpdatePost(user, post)) {
@@ -102,7 +110,7 @@ export async function deletePost(user: AuthUser, slug: string) {
   const [post] = await PostRepo.findPostBySlug(slug);
 
   if (!post) {
-    throw new NotFoundError("Post not found");
+    throw new NotFoundError("Post");
   }
 
   if (!canDeletePost(user, post)) {

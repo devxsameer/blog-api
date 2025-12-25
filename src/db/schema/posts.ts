@@ -1,6 +1,7 @@
 // src/db/schema/posts.ts
 import {
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -32,6 +33,8 @@ export const postsTable = pgTable(
     excerpt: text(),
     contentMarkdown: text("content_markdown").notNull(),
     contentHtml: text("content_html"),
+
+    viewCount: integer("view_count").notNull().default(0),
 
     status: postStatusEnum().notNull().default("draft"),
 

@@ -5,8 +5,10 @@ import { postsTable } from "@/db/schema/posts.js";
 
 type PostResource = typeof postsTable.$inferSelect;
 
-export function canViewPost(user: AuthUser, post: PostResource) {
+export function canViewPost(user: AuthUser | null, post: PostResource) {
   if (post.status === "published") return true;
+
+  if (!user) return false;
 
   if (user.role === Role.ADMIN) return true;
 

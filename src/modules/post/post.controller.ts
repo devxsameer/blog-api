@@ -29,9 +29,9 @@ export async function getPost(
   _next: NextFunction
 ) {
   const { slug } = req.validated!.params as postSlugParamInput["params"];
-  const user = req.user;
+  const user = req.user ?? null;
 
-  const post = await PostService.getPostBySlug(user!, slug);
+  const post = await PostService.getPostBySlug(user, slug, req.ip!);
 
   return sendResponse(res, {
     data: post,

@@ -8,6 +8,13 @@
       "when": 1766510607564,
       "tag": "0000_bent_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766669599303,
+      "tag": "0001_curly_shard",
+      "breakpoints": true
     }
   ]
 }
