@@ -15,6 +15,13 @@
       "when": 1766669599303,
       "tag": "0001_curly_shard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766685279671,
+      "tag": "0002_safe_rattler",
+      "breakpoints": true
     }
   ]
 }
