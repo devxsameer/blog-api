@@ -15,14 +15,6 @@ export function findPostById(id: string) {
   return db.select().from(postsTable).where(eq(postsTable.id, id)).limit(1);
 }
 
-export function findPostOwnerBySlug(postSlug: string) {
-  return db
-    .select({ authorId: postsTable.authorId })
-    .from(postsTable)
-    .where(eq(postsTable.slug, postSlug))
-    .limit(1);
-}
-
 export function updatePostById(
   postId: string,
   data: Partial<typeof postsTable.$inferInsert>
@@ -34,8 +26,8 @@ export function updatePostById(
     .returning();
 }
 
-export function deletePostById(postId: string) {
-  return db.delete(postsTable).where(eq(postsTable.id, postId));
+export function deletePostBySlug(slug: string) {
+  return db.delete(postsTable).where(eq(postsTable.slug, slug)).returning();
 }
 
 export function findPublishedPosts(limit: number, offset: number) {

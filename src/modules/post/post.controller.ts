@@ -1,6 +1,6 @@
 // src/modules/post/post.controller.ts
 import { NextFunction, Request, Response } from "express";
-import { CreatePostInput } from "./post.schema.js";
+import { CreatePostInput, postSlugParamInput } from "./post.schema.js";
 import * as PostService from "./post.service.js";
 import { sendResponse } from "@/utils/api-response.js";
 
@@ -20,4 +20,12 @@ export async function deletePost(
   req: Request,
   res: Response,
   _next: NextFunction
-) {}
+) {
+  const { postSlug } = req.validated?.params as postSlugParamInput["params"];
+
+  const post = await PostService.deletePost(req.user!, postSlug);
+
+  return sendResponse(res, {
+    message: `Post with id ${post.id} has been successfully deleted.`,
+  });
+}

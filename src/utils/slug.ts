@@ -2,6 +2,7 @@
 import { customAlphabet } from "nanoid";
 
 const nanoid = customAlphabet("1234567890abcdefghijklmnopqrstuvwxyz", 5);
+const MAX_BASE_LENGTH = 60;
 
 export const generateSlug = (title: string): string => {
   const slugifiedTitle = title
@@ -13,7 +14,9 @@ export const generateSlug = (title: string): string => {
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+  const base = slugifiedTitle.slice(0, MAX_BASE_LENGTH);
+
   const id = nanoid();
 
-  return `${slugifiedTitle}-${id}`;
+  return base.length > 0 ? `${base}-${id}` : `post-${id}`;
 };

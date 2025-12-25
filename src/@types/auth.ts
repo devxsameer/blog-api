@@ -1,6 +1,6 @@
-// src/types/auth.ts
-export type Role = "admin" | "author" | "user";
+import { Role } from "@/constants/roles.js";
 
+// src/types/auth.ts
 export interface AuthUser {
   id: string;
   role: Role;

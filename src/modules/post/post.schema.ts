@@ -27,6 +27,12 @@ export type UpdatePostInput = z.infer<typeof updatePostSchema>;
 
 export const postSlugParamSchema = z.object({
   params: z.object({
-    slug: z.string(),
+    postSlug: z
+      .string()
+      .min(3)
+      .max(100)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invalid post slug format"),
   }),
 });
+
+export type postSlugParamInput = z.infer<typeof postSlugParamSchema>;

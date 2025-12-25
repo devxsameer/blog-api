@@ -2,8 +2,7 @@
 import { verifyAccessToken } from "@/utils/jwt.js";
 import { ForbiddenError, UnauthorizedError } from "@/errors/http-errors.js";
 import type { RequestHandler } from "express";
-import { Request } from "express";
-import { Role } from "@/@types/auth.js";
+import { Role } from "@/constants/roles.js";
 
 /* ---------------- AUTH ---------------- */
 
@@ -37,26 +36,6 @@ export const requireRole =
     if (!req.user) throw new UnauthorizedError();
 
     if (!allowedRoles.includes(req.user.role)) {
-      throw new ForbiddenError();
-    }
-
-    next();
-  };
-
-/* ---------------- OWNERSHIP ---------------- */
-
-export const requireOwnership =
-  (
-    getResourceOwnerId: (req: Request) => Promise<string | null>
-  ): RequestHandler =>
-  async (req, _res, next) => {
-    if (!req.user) throw new UnauthorizedError();
-
-    const ownerId = await getResourceOwnerId(req);
-
-    if (req.user.role === "admin") return next();
-
-    if (req.user.id !== ownerId) {
       throw new ForbiddenError();
     }
 

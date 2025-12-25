@@ -1,7 +1,13 @@
 // src/modules/post/post.service.ts
 import { generateSlug } from "@/utils/slug.js";
 import * as PostRepo from "./post.repository.js";
-import { ConflictError, NotFoundError } from "@/errors/http-errors.js";
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+} from "@/errors/http-errors.js";
+import { canDeletePost } from "./post.policy.js";
+import { AuthUser } from "@/@types/auth.js";
 
 export async function createPost(
   authorId: string,
@@ -31,14 +37,6 @@ export async function createPost(
   });
 
   return post;
-}
-
-export async function getOwnerId(postSlug: string) {
-  const [post] = await PostRepo.findPostOwnerBySlug(postSlug);
-
-  if (!post) throw new NotFoundError("Post");
-
-  return post.authorId;
 }
 
 export async function getPostBySlug(slug: string) {
@@ -72,6 +70,18 @@ export async function updatePost(
   return post;
 }
 
-export async function deletePost(postId: string) {
-  await PostRepo.deletePostById(postId);
+export async function deletePost(user: AuthUser, slug: string) {
+  const [post] = await PostRepo.findPostBySlug(slug);
+
+  if (!post) {
+    throw new NotFoundError("Post not found");
+  }
+
+  if (!canDeletePost(user, post)) {
+    throw new ForbiddenError("You cannot delete this post");
+  }
+
+  const [deletedPost] = await PostRepo.deletePostBySlug(slug);
+
+  return deletedPost;
 }
