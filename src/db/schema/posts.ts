@@ -35,6 +35,7 @@ export const postsTable = pgTable(
     contentHtml: text("content_html"),
 
     viewCount: integer("view_count").notNull().default(0),
+    likeCount: integer("like_count").notNull().default(0),
 
     status: postStatusEnum().notNull().default("draft"),
 

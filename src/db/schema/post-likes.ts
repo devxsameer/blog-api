@@ -1,5 +1,11 @@
 // src/db/schema/post-likes.ts
-import { pgTable, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgTable,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 import { postsTable } from "./posts.js";
 import { usersTable } from "./users.js";
 
@@ -22,5 +28,7 @@ export const postLikesTable = pgTable(
   },
   (table) => [
     uniqueIndex("post_likes_unique_idx").on(table.userId, table.postId),
+    index("post_likes_post_idx").on(table.postId),
+    index("post_likes_user_idx").on(table.userId),
   ]
 );
