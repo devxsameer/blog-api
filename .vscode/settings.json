@@ -1,3 +1,4 @@
 {
-  "conventionalCommits.scopes": ["auth", "post", "db"]
+  "conventionalCommits.scopes": ["auth", "post", "db"],
+  "cSpell.words": ["unliked"]
 }

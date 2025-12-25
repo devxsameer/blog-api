@@ -2,7 +2,7 @@
 import { db } from "@/db/index.js";
 import { postViewsTable } from "@/db/schema/post-views.js";
 import { postsTable } from "@/db/schema/posts.js";
-import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, lt, sql } from "drizzle-orm";
 
 export function createPost(data: typeof postsTable.$inferInsert) {
   return db.insert(postsTable).values(data).returning();
@@ -10,6 +10,24 @@ export function createPost(data: typeof postsTable.$inferInsert) {
 
 export function findPostBySlug(slug: string) {
   return db.select().from(postsTable).where(eq(postsTable.slug, slug)).limit(1);
+}
+
+export function findPostBySlugWithLikeStatus(slug: string, userId?: string) {
+  return db
+    .select({
+      ...getTableColumns(postsTable),
+      likedByMe: userId
+        ? sql<boolean>`exists (
+            select 1
+            from post_likes pl
+            where pl.post_id = ${postsTable.id}
+              and pl.user_id = ${userId}
+          )`
+        : sql<boolean>`false`,
+    })
+    .from(postsTable)
+    .where(eq(postsTable.slug, slug))
+    .limit(1);
 }
 
 export function findPostById(id: string) {
@@ -31,7 +49,15 @@ export function deletePostBySlug(slug: string) {
   return db.delete(postsTable).where(eq(postsTable.slug, slug)).returning();
 }
 
-export function findPublishedPostsCursor(limit: number, cursor?: Date) {
+export function findPublishedPostsCursor({
+  limit,
+  cursor,
+  userId,
+}: {
+  limit: number;
+  cursor?: Date;
+  userId?: string;
+}) {
   const whereClause = cursor
     ? and(
         eq(postsTable.status, "published"),
@@ -40,7 +66,17 @@ export function findPublishedPostsCursor(limit: number, cursor?: Date) {
     : eq(postsTable.status, "published");
 
   return db
-    .select()
+    .select({
+      ...getTableColumns(postsTable),
+      likedByMe: userId
+        ? sql<boolean>`exists (
+            select 1
+            from post_likes pl
+            where pl.post_id = ${postsTable.id}
+              and pl.user_id = ${userId}
+          )`
+        : sql<boolean>`false`,
+    })
     .from(postsTable)
     .where(whereClause)
     .orderBy(desc(postsTable.publishedAt))

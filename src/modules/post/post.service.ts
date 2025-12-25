@@ -8,14 +8,17 @@ import { AuthUser } from "@/@types/auth.js";
 export async function listPublishedPosts({
   limit,
   cursor,
+  userId,
 }: {
   limit: number;
   cursor?: string;
+  userId?: string;
 }) {
-  const posts = await PostRepo.findPublishedPostsCursor(
+  const posts = await PostRepo.findPublishedPostsCursor({
     limit,
-    cursor ? new Date(cursor) : undefined
-  );
+    cursor: cursor ? new Date(cursor) : undefined,
+    userId,
+  });
 
   const hasNextPage = posts.length > limit;
   const items = hasNextPage ? posts.slice(0, limit) : posts;
@@ -62,7 +65,7 @@ export async function getPostBySlug(
   slug: string,
   ip: string
 ) {
-  const [post] = await PostRepo.findPostBySlug(slug);
+  const [post] = await PostRepo.findPostBySlugWithLikeStatus(slug, user?.id);
 
   if (!post) throw new NotFoundError("Post");
 

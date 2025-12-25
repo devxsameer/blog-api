@@ -19,7 +19,7 @@ const postRoutes = Router();
 
 postRoutes
   .route("/")
-  .get(validate(listPostsQuerySchema), PostController.list)
+  .get(optionalAuth, validate(listPostsQuerySchema), PostController.list)
   .post(
     requireAuth,
     requireRole(Role.ADMIN, Role.AUTHOR),

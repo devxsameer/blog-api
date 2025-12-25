@@ -15,6 +15,7 @@ export async function list(req: Request, res: Response) {
   const result = await PostService.listPublishedPosts({
     limit,
     cursor,
+    userId: req.user?.id,
   });
 
   return sendResponse(res, {
