@@ -44,4 +44,4 @@ export const postSlugParamSchema = z.object({
   }),
 });
 
-export type postSlugParamInput = z.infer<typeof postSlugParamSchema>;
+export type PostSlugParamInput = z.infer<typeof postSlugParamSchema>;

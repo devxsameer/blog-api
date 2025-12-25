@@ -1,11 +1,7 @@
 // src/modules/post/post.service.ts
 import { generateSlug } from "@/utils/slug.js";
 import * as PostRepo from "./post.repository.js";
-import {
-  ConflictError,
-  ForbiddenError,
-  NotFoundError,
-} from "@/errors/http-errors.js";
+import { ForbiddenError, NotFoundError } from "@/errors/http-errors.js";
 import { canDeletePost, canUpdatePost, canViewPost } from "./post.policy.js";
 import { AuthUser } from "@/@types/auth.js";
 

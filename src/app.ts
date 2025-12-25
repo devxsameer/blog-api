@@ -8,6 +8,7 @@ import { httpLogger, requestId } from "./middlewares/logger.middleware.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
 import postRoutes from "./modules/post/post.routes.js";
+import commentRoutes from "./modules/comment/comment.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
 
@@ -26,6 +27,7 @@ app.use(httpLogger);
 /* -------------------- ROUTES -------------------- */
 app.use("/auth", authRoutes);
 app.use("/posts", postRoutes);
+app.use("/", commentRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(new NotFoundError("Route"));

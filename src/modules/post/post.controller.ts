@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   CreatePostInput,
   ListPostsQuery,
-  postSlugParamInput,
+  PostSlugParamInput,
   UpdatePostInput,
 } from "./post.schema.js";
 import * as PostService from "./post.service.js";
@@ -28,7 +28,7 @@ export async function getPost(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated!.params as postSlugParamInput["params"];
+  const { slug } = req.validated!.params as PostSlugParamInput["params"];
   const user = req.user ?? null;
 
   const post = await PostService.getPostBySlug(user, slug, req.ip!);
@@ -58,7 +58,7 @@ export async function updatePost(
   _next: NextFunction
 ) {
   const body = req.validated?.body as UpdatePostInput["body"];
-  const { slug } = req.validated?.params as postSlugParamInput["params"];
+  const { slug } = req.validated?.params as PostSlugParamInput["params"];
 
   const post = await PostService.updatePost(req.user!, slug, body);
 
@@ -73,7 +73,7 @@ export async function deletePost(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated?.params as postSlugParamInput["params"];
+  const { slug } = req.validated?.params as PostSlugParamInput["params"];
 
   const post = await PostService.deletePost(req.user!, slug);
 
