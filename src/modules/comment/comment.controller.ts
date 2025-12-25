@@ -1,11 +1,11 @@
 // src/modules/comments/comments.controller.ts
 import { NextFunction, Request, Response } from "express";
 import {
-  CommentIdParam,
-  CreateCommentInput,
+  CommentIdParams,
+  CreateCommentBody,
   ListCommentsQuery,
 } from "./comment.schema.js";
-import { PostSlugParamInput } from "@/modules/post/post.schema.js";
+import { PostSlugParams } from "@/modules/post/post.schema.js";
 import * as CommentService from "./comment.service.js";
 import { sendResponse } from "@/utils/api-response.js";
 
@@ -14,8 +14,8 @@ export async function listByPost(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated!.params as PostSlugParamInput["params"];
-  const { limit, cursor } = req.validated!.query as ListCommentsQuery["query"];
+  const { slug } = req.validated!.params as PostSlugParams;
+  const { limit, cursor } = req.validated!.query as ListCommentsQuery;
 
   const result = await CommentService.listCommentsByPost({
     postSlug: slug,
@@ -34,8 +34,8 @@ export async function createComment(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated!.params as PostSlugParamInput["params"];
-  const data = req.validated!.body as CreateCommentInput["body"];
+  const { slug } = req.validated!.params as PostSlugParams;
+  const data = req.validated!.body as CreateCommentBody;
 
   const comment = await CommentService.createComment(req.user!.id, slug, data);
 
@@ -51,7 +51,7 @@ export async function deleteComment(
   res: Response,
   _next: NextFunction
 ) {
-  const { commentId } = req.validated!.params as CommentIdParam["params"];
+  const { commentId } = req.validated!.params as CommentIdParams;
 
   const comment = await CommentService.deleteComment(req.user!, commentId);
 

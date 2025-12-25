@@ -1,16 +1,16 @@
 // src/modules/post/post.controller.ts
 import { NextFunction, Request, Response } from "express";
 import {
-  CreatePostInput,
+  CreatePostBody,
   ListPostsQuery,
-  PostSlugParamInput,
-  UpdatePostInput,
+  PostSlugParams,
+  UpdatePostBody,
 } from "./post.schema.js";
 import * as PostService from "./post.service.js";
 import { sendResponse } from "@/utils/api-response.js";
 
 export async function list(req: Request, res: Response) {
-  const { limit, cursor } = req.validated!.query as ListPostsQuery["query"];
+  const { limit, cursor } = req.validated!.query as ListPostsQuery;
 
   const result = await PostService.listPublishedPosts({
     limit,
@@ -28,7 +28,7 @@ export async function getPost(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated!.params as PostSlugParamInput["params"];
+  const { slug } = req.validated!.params as PostSlugParams;
   const user = req.user ?? null;
 
   const post = await PostService.getPostBySlug(user, slug, req.ip!);
@@ -42,7 +42,7 @@ export async function createPost(
   res: Response,
   _next: NextFunction
 ) {
-  const body = req.validated!.body as CreatePostInput["body"];
+  const body = req.validated!.body as CreatePostBody;
 
   const post = await PostService.createPost(req.user!.id, body);
 
@@ -57,8 +57,8 @@ export async function updatePost(
   res: Response,
   _next: NextFunction
 ) {
-  const body = req.validated?.body as UpdatePostInput["body"];
-  const { slug } = req.validated?.params as PostSlugParamInput["params"];
+  const body = req.validated?.body as UpdatePostBody;
+  const { slug } = req.validated?.params as PostSlugParams;
 
   const post = await PostService.updatePost(req.user!, slug, body);
 
@@ -73,7 +73,7 @@ export async function deletePost(
   res: Response,
   _next: NextFunction
 ) {
-  const { slug } = req.validated?.params as PostSlugParamInput["params"];
+  const { slug } = req.validated?.params as PostSlugParams;
 
   const post = await PostService.deletePost(req.user!, slug);
 

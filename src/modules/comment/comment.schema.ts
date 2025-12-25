@@ -3,12 +3,12 @@ import { z } from "zod";
 
 export const createCommentSchema = z.object({
   body: z.object({
-    content: z.string().min(1).max(2000),
+    content: z.string().trim().min(1).max(2000),
     parentId: z.uuid().optional(),
   }),
 });
 
-export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+export type CreateCommentBody = z.infer<typeof createCommentSchema.shape.body>;
 
 export const commentIdParamSchema = z.object({
   params: z.object({
@@ -16,7 +16,7 @@ export const commentIdParamSchema = z.object({
   }),
 });
 
-export type CommentIdParam = z.infer<typeof commentIdParamSchema>;
+export type CommentIdParams = z.infer<typeof commentIdParamSchema.shape.params>;
 
 export const listCommentsQuerySchema = z.object({
   query: z.object({
@@ -25,4 +25,6 @@ export const listCommentsQuerySchema = z.object({
   }),
 });
 
-export type ListCommentsQuery = z.infer<typeof listCommentsQuerySchema>;
+export type ListCommentsQuery = z.infer<
+  typeof listCommentsQuerySchema.shape.query
+>;
