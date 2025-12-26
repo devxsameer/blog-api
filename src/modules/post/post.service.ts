@@ -4,6 +4,9 @@ import * as PostRepo from "./post.repository.js";
 import { ForbiddenError, NotFoundError } from "@/errors/http-errors.js";
 import { canDeletePost, canUpdatePost, canViewPost } from "./post.policy.js";
 import { AuthUser } from "@/@types/auth.js";
+import * as TagService from "@/modules/tag/tag.service.js";
+import * as TagRepo from "@/modules/tag/tag.repository.js";
+import { CreatePostBody, UpdatePostBody } from "./post.schema.js";
 
 export async function listPublishedPosts({
   limit,
@@ -36,16 +39,10 @@ export async function listPublishedPosts({
   };
 }
 
-export async function createPost(
-  authorId: string,
-  input: {
-    title: string;
-    contentMarkdown: string;
-    excerpt?: string;
-    status: "draft" | "published" | "archived";
-  }
-) {
+export async function createPost(authorId: string, input: CreatePostBody) {
   const slug = generateSlug(input.title);
+
+  const tagIds = input.tags ? await TagService.processTags(input.tags) : [];
 
   const [post] = await PostRepo.createPost({
     authorId,
@@ -56,6 +53,8 @@ export async function createPost(
     status: input.status,
     publishedAt: input.status === "published" ? new Date() : null,
   });
+
+  await TagRepo.attachTagsToPost(post.id, tagIds);
 
   return post;
 }
@@ -77,18 +76,18 @@ export async function getPostBySlug(
     PostRepo.recordPostView(post.id, ip).catch(() => {});
   }
 
-  return post;
+  const tags = await TagService.getTagsForPost(post.id);
+
+  return {
+    ...post,
+    tags,
+  };
 }
 
 export async function updatePost(
   user: AuthUser,
   slug: string,
-  input: Partial<{
-    title: string;
-    contentMarkdown: string;
-    excerpt: string;
-    status: "draft" | "published" | "archived";
-  }>
+  input: Partial<UpdatePostBody>
 ) {
   const [post] = await PostRepo.findPostBySlug(slug);
 
@@ -101,6 +100,11 @@ export async function updatePost(
   }
 
   const [updatedPost] = await PostRepo.updatePostBySlug(slug, input);
+
+  if (input.tags) {
+    const tagIds = await TagService.processTags(input.tags);
+    await TagRepo.replacePostTags(post.id, tagIds);
+  }
 
   return updatedPost;
 }

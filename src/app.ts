@@ -10,6 +10,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import postRoutes from "./modules/post/post.routes.js";
 import commentRoutes from "./modules/comment/comment.routes.js";
 import postLikesRoutes from "./modules/post-like/post-like.routes.js";
+import tagRoutes from "./modules/tag/tag.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
 
@@ -28,6 +29,7 @@ app.use(httpLogger);
 /* -------------------- ROUTES -------------------- */
 app.use("/auth", authRoutes);
 app.use("/posts", postRoutes);
+app.use("/tags", tagRoutes);
 app.use("/", commentRoutes);
 app.use("/", postLikesRoutes);
 
