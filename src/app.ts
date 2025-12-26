@@ -13,6 +13,7 @@ import postLikesRoutes from "./modules/post-like/post-like.routes.js";
 import tagRoutes from "./modules/tag/tag.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
+import { corsMiddleware } from "./middlewares/cors.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("trust proxy", true);
+
+/* ------------------------ CORS ----------------------- */
+app.use(corsMiddleware);
+app.options("*", corsMiddleware);
 
 /* -------------------- CORE MIDDLEWARE -------------------- */
 app.use(requestId);
