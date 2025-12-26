@@ -15,7 +15,7 @@ export async function createLike(
 
   return sendResponse(res, {
     statusCode: 201,
-    message: "Post liked",
+    message: "Post liked successfully.",
   });
 }
 export async function deleteLike(
@@ -28,6 +28,6 @@ export async function deleteLike(
   await unlikePost(req.user!.id, slug);
 
   return sendResponse(res, {
-    statusCode: 204,
+    message: "Post unliked successfully.",
   });
 }

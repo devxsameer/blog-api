@@ -1,5 +1,6 @@
 // src/modules/post/post.repository.ts
 import { db } from "@/db/index.js";
+import { postLikesTable } from "@/db/schema/post-likes.js";
 import { postViewsTable } from "@/db/schema/post-views.js";
 import { postsTable } from "@/db/schema/posts.js";
 import { and, desc, eq, getTableColumns, lt, sql } from "drizzle-orm";
@@ -71,7 +72,7 @@ export function findPublishedPostsCursor({
       likedByMe: userId
         ? sql<boolean>`exists (
             select 1
-            from post_likes pl
+            from ${postLikesTable} pl
             where pl.post_id = ${postsTable.id}
               and pl.user_id = ${userId}
           )`

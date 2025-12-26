@@ -1,4 +1,4 @@
-// src/modules/comments/comments.repository.ts
+// src/modules/comment/comment.repository.ts
 import { db } from "@/db/index.js";
 import { commentsTable } from "@/db/schema/comments.js";
 import { and, asc, eq, gt } from "drizzle-orm";

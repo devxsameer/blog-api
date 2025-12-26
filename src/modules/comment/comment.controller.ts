@@ -1,4 +1,4 @@
-// src/modules/comments/comments.controller.ts
+// src/modules/comment/comment.controller.ts
 import { NextFunction, Request, Response } from "express";
 import {
   CommentIdParams,
@@ -56,6 +56,6 @@ export async function deleteComment(
   const comment = await CommentService.deleteComment(req.user!, commentId);
 
   return sendResponse(res, {
-    message: `Post with id ${comment.id} has been successfully deleted.`,
+    message: `Comment with id ${comment.id} has been successfully deleted.`,
   });
 }

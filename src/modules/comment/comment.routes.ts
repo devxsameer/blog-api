@@ -2,6 +2,7 @@
 import { validate } from "@/middlewares/validate.middleware.js";
 import { Router } from "express";
 import {
+  commentIdParamSchema,
   createCommentSchema,
   listCommentsQuerySchema,
 } from "./comment.schema.js";
@@ -22,6 +23,7 @@ commentRoutes
 commentRoutes.delete(
   "/comments/:commentId",
   requireAuth,
+  validate(commentIdParamSchema),
   CommentsController.deleteComment
 );
 export default commentRoutes;

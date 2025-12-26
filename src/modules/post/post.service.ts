@@ -87,8 +87,9 @@ export async function getPostBySlug(
 export async function updatePost(
   user: AuthUser,
   slug: string,
-  input: Partial<UpdatePostBody>
+  input: UpdatePostBody
 ) {
+  // Slug is immutable once created
   const [post] = await PostRepo.findPostBySlug(slug);
 
   if (!post) {

@@ -1,6 +1,6 @@
-// src/modules/comments/comments.service.ts
+// src/modules/comment/comment.service.ts
 import * as PostRepo from "@/modules/post/post.repository.js";
-import * as CommentRepo from "./comments.repository.js";
+import * as CommentRepo from "./comment.repository.js";
 import { AuthUser } from "@/@types/auth.js";
 import {
   BadRequestError,

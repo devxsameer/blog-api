@@ -64,7 +64,7 @@ export async function refresh(
   res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
 
   return sendResponse(res, {
-    message: "Logged in successfully.",
+    message: "Access token refreshed.",
     data: {
       accessToken: tokens.accessToken,
     },
