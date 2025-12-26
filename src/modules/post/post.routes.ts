@@ -14,12 +14,18 @@ import {
   updatePostSchema,
 } from "./post.schema.js";
 import { Role } from "@/constants/roles.js";
+import { publicReadRateLimit } from "@/middlewares/rate-limit.middleware.js";
 
 const postRoutes = Router();
 
 postRoutes
   .route("/")
-  .get(optionalAuth, validate(listPostsQuerySchema), PostController.list)
+  .get(
+    publicReadRateLimit,
+    optionalAuth,
+    validate(listPostsQuerySchema),
+    PostController.list
+  )
   .post(
     requireAuth,
     requireRole(Role.ADMIN, Role.AUTHOR),
@@ -29,7 +35,12 @@ postRoutes
 
 postRoutes
   .route("/:slug")
-  .get(optionalAuth, validate(postSlugParamSchema), PostController.getPost)
+  .get(
+    publicReadRateLimit,
+    optionalAuth,
+    validate(postSlugParamSchema),
+    PostController.getPost
+  )
   .put(
     requireAuth,
     validate(postSlugParamSchema),

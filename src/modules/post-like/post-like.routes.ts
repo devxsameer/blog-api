@@ -4,12 +4,18 @@ import { requireAuth } from "@/middlewares/auth.middleware.js";
 import { validate } from "@/middlewares/validate.middleware.js";
 import { postSlugParamSchema } from "@/modules/post/post.schema.js";
 import { createLike, deleteLike } from "./post-like.controller.js";
+import { writeRateLimit } from "@/middlewares/rate-limit.middleware.js";
 
 const postLikesRoutes = Router();
 
 postLikesRoutes
   .route("/posts/:slug/like")
-  .post(requireAuth, validate(postSlugParamSchema), createLike)
-  .delete(requireAuth, validate(postSlugParamSchema), deleteLike);
+  .post(requireAuth, writeRateLimit, validate(postSlugParamSchema), createLike)
+  .delete(
+    requireAuth,
+    writeRateLimit,
+    validate(postSlugParamSchema),
+    deleteLike
+  );
 
 export default postLikesRoutes;

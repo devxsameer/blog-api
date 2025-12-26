@@ -8,6 +8,7 @@ import {
 } from "./comment.schema.js";
 import * as CommentsController from "./comment.controller.js";
 import { requireAuth } from "@/middlewares/auth.middleware.js";
+import { writeRateLimit } from "@/middlewares/rate-limit.middleware.js";
 
 const commentRoutes = Router();
 
@@ -16,6 +17,7 @@ commentRoutes
   .get(validate(listCommentsQuerySchema), CommentsController.listByPost)
   .post(
     requireAuth,
+    writeRateLimit,
     validate(createCommentSchema),
     CommentsController.createComment
   );

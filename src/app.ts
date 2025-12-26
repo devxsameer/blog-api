@@ -5,6 +5,8 @@ import { fileURLToPath } from "url";
 
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
 import { httpLogger, requestId } from "./middlewares/logger.middleware.js";
+import { corsMiddleware } from "./middlewares/cors.middleware.js";
+import { securityMiddleware } from "./middlewares/security.middleware.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
 import postRoutes from "./modules/post/post.routes.js";
@@ -13,7 +15,6 @@ import postLikesRoutes from "./modules/post-like/post-like.routes.js";
 import tagRoutes from "./modules/tag/tag.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
-import { corsMiddleware } from "./middlewares/cors.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 app.set("trust proxy", true);
+
+/* ------------------------ SECURITY ----------------------- */
+app.use(securityMiddleware);
 
 /* ------------------------ CORS ----------------------- */
 app.use(corsMiddleware);
