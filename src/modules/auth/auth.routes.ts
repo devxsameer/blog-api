@@ -8,6 +8,7 @@ import { authRateLimit } from "@/middlewares/rate-limit.middleware.js";
 
 const authRoutes = Router();
 
+authRoutes.get("/me",requireAuth,AuthController.me)
 authRoutes.post(
   "/signup",
   authRateLimit,

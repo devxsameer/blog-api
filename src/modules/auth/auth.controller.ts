@@ -5,6 +5,7 @@ import * as AuthService from "./auth.service.js";
 import { refreshCookieOptions } from "@/utils/cookies.js";
 import { sendResponse } from "@/utils/api-response.js";
 import { UnauthorizedError } from "@/errors/http-errors.js";
+import { findUserById } from "./auth.repository.js";
 
 export async function signup(req: Request, res: Response, _next: NextFunction) {
   const { username, email, password } = req.validated!
@@ -77,5 +78,21 @@ export async function logout(req: Request, res: Response, _next: NextFunction) {
 
   return sendResponse(res, {
     message: "Logged out successfully.",
+  });
+}
+
+export async function me(req: Request, res: Response, _next: NextFunction) {
+  const [user] = await findUserById(req.user!.id);
+
+  return sendResponse(res, {
+    message: "Authenticated user",
+    data: {
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    },
   });
 }
