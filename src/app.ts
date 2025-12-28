@@ -17,6 +17,7 @@ import tagRoutes from "./modules/tag/tag.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
 import { swaggerHandler, swaggerMiddleware } from "./docs/swagger.js";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,14 +36,15 @@ app.options("{*path}", corsMiddleware);
 /* -------------------- CORE MIDDLEWARE -------------------- */
 app.use(requestId);
 app.use(express.json());
+app.use(cookieParser());
 app.use(httpLogger);
 
 /* -------------------- ROUTES -------------------- */
-app.use("/auth", authRoutes);
-app.use("/posts", postRoutes);
-app.use("/tags", tagRoutes);
-app.use("/", commentRoutes);
-app.use("/", postLikesRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/tags", tagRoutes);
+app.use("/api", commentRoutes);
+app.use("/api", postLikesRoutes);
 
 /* -------------------- DOCS -------------------- */
 if (env.NODE_ENV !== "production") {
