@@ -3,6 +3,7 @@ import { db } from "@/db/index.js";
 import { postLikesTable } from "@/db/schema/post-likes.js";
 import { postViewsTable } from "@/db/schema/post-views.js";
 import { postsTable } from "@/db/schema/posts.js";
+import { usersTable } from "@/db/schema/users.js";
 import { and, desc, eq, getTableColumns, lt, sql } from "drizzle-orm";
 
 export function createPost(data: typeof postsTable.$inferInsert) {
@@ -17,6 +18,11 @@ export function findPostBySlugWithLikeStatus(slug: string, userId?: string) {
   return db
     .select({
       ...getTableColumns(postsTable),
+      author: {
+        username: usersTable.username,
+        bio: usersTable.bio,
+        avatarUrl: usersTable.avatarUrl,
+      },
       likedByMe: userId
         ? sql<boolean>`exists (
             select 1
@@ -27,6 +33,7 @@ export function findPostBySlugWithLikeStatus(slug: string, userId?: string) {
         : sql<boolean>`false`,
     })
     .from(postsTable)
+    .innerJoin(usersTable, eq(postsTable.authorId, usersTable.id))
     .where(eq(postsTable.slug, slug))
     .limit(1);
 }

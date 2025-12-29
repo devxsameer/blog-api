@@ -56,8 +56,6 @@ export async function refresh(
   res: Response,
   _next: NextFunction
 ) {
-  console.log("Raw Cookie header:", req.headers.cookie);
-  console.log("Parsed cookies:", req.cookies);
   const token = req.cookies?.refreshToken;
 
   if (!token) throw new UnauthorizedError();

@@ -24,7 +24,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 /* ------------------------ SECURITY ----------------------- */
 app.use(securityMiddleware);
@@ -38,6 +38,11 @@ app.use(requestId);
 app.use(express.json());
 app.use(cookieParser());
 app.use(httpLogger);
+
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 /* -------------------- ROUTES -------------------- */
 app.use("/api/auth", authRoutes);

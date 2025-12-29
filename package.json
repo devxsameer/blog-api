@@ -8,6 +8,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias",
     "start": "NODE_ENV=production node dist/server.js",
+    "db:seed": "tsx src/db/seed.ts",
     "db:generate": "tsx ./node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "tsx ./node_modules/drizzle-kit/bin.cjs migrate",
     "db:push": "tsx ./node_modules/drizzle-kit/bin.cjs push",
@@ -19,6 +20,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501",
   "devDependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -32,6 +34,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "argon2": "^0.44.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -39,7 +42,7 @@
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
-    "helmet": "^8.1.0",
+    "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.6",
     "openapi-types": "^12.1.3",
