@@ -1,21 +1,17 @@
 // src/modules/comment/comment.controller.ts
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import {
-  CommentIdParams,
-  CreateCommentBody,
-  ListCommentsQuery,
+  commentIdParamSchema,
+  createCommentSchema,
+  listCommentsQuerySchema,
 } from "./comment.schema.js";
-import { PostSlugParams } from "@/modules/post/post.schema.js";
+import { postSlugParamSchema } from "@/modules/post/post.schema.js";
 import * as CommentService from "./comment.service.js";
 import { sendResponse } from "@/utils/api-response.js";
 
-export async function listByPost(
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) {
-  const { slug } = req.validated!.params as PostSlugParams;
-  const { limit, cursor } = req.validated!.query as ListCommentsQuery;
+export async function listByPost(req: Request, res: Response) {
+  const { slug } = postSlugParamSchema.parse(req.params);
+  const { limit, cursor } = listCommentsQuerySchema.parse(req.query);
 
   const result = await CommentService.listCommentsByPost({
     postSlug: slug,
@@ -29,13 +25,9 @@ export async function listByPost(
   });
 }
 
-export async function createComment(
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) {
-  const { slug } = req.validated!.params as PostSlugParams;
-  const data = req.validated!.body as CreateCommentBody;
+export async function createComment(req: Request, res: Response) {
+  const { slug } = postSlugParamSchema.parse(req.params);
+  const data = createCommentSchema.parse(req.body);
 
   const comment = await CommentService.createComment(req.user!.id, slug, data);
 
@@ -46,12 +38,8 @@ export async function createComment(
   });
 }
 
-export async function deleteComment(
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) {
-  const { commentId } = req.validated!.params as CommentIdParams;
+export async function deleteComment(req: Request, res: Response) {
+  const { commentId } = commentIdParamSchema.parse(req.params);
 
   const comment = await CommentService.deleteComment(req.user!, commentId);
 

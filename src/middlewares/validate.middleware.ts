@@ -1,15 +1,21 @@
 // src/middlewares/validate.middleware.ts
 import { NextFunction, Request, Response } from "express";
-import { ZodObject } from "zod";
+import { ZodType } from "zod";
 
-export const validate =
-  (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
-    const parsed = schema.parse({
-      body: req.body,
-      params: req.params,
-      query: req.query,
-    });
+export const validateParams =
+  (schema: ZodType) => (req: Request, _res: Response, next: NextFunction) => {
+    schema.parse(req.params);
+    next();
+  };
 
-    req.validated = parsed;
+export const validateBody =
+  (schema: ZodType) => (req: Request, _res: Response, next: NextFunction) => {
+    schema.parse(req.body);
+    next();
+  };
+
+export const validateQuery =
+  (schema: ZodType) => (req: Request, _res: Response, next: NextFunction) => {
+    schema.parse(req.query);
     next();
   };

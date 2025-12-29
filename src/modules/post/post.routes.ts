@@ -6,7 +6,11 @@ import {
 } from "@/middlewares/auth.middleware.js";
 import { Router } from "express";
 import * as PostController from "./post.controller.js";
-import { validate } from "@/middlewares/validate.middleware.js";
+import {
+  validateBody,
+  validateParams,
+  validateQuery,
+} from "@/middlewares/validate.middleware.js";
 import {
   createPostSchema,
   listPostsQuerySchema,
@@ -23,13 +27,13 @@ postRoutes
   .get(
     publicReadRateLimit,
     optionalAuth,
-    validate(listPostsQuerySchema),
+    validateQuery(listPostsQuerySchema),
     PostController.list
   )
   .post(
     requireAuth,
     requireRole(Role.ADMIN, Role.AUTHOR),
-    validate(createPostSchema),
+    validateBody(createPostSchema),
     PostController.createPost
   );
 
@@ -38,18 +42,18 @@ postRoutes
   .get(
     publicReadRateLimit,
     optionalAuth,
-    validate(postSlugParamSchema),
+    validateParams(postSlugParamSchema),
     PostController.getPost
   )
   .put(
     requireAuth,
-    validate(postSlugParamSchema),
-    validate(updatePostSchema),
+    validateParams(postSlugParamSchema),
+    validateBody(updatePostSchema),
     PostController.updatePost
   )
   .delete(
     requireAuth,
-    validate(postSlugParamSchema),
+    validateParams(postSlugParamSchema),
     PostController.deletePost
   );
 

@@ -1,5 +1,9 @@
 // src/modules/comment/comment.routes.ts
-import { validate } from "@/middlewares/validate.middleware.js";
+import {
+  validateBody,
+  validateParams,
+  validateQuery,
+} from "@/middlewares/validate.middleware.js";
 import { Router } from "express";
 import {
   commentIdParamSchema,
@@ -9,23 +13,28 @@ import {
 import * as CommentsController from "./comment.controller.js";
 import { requireAuth } from "@/middlewares/auth.middleware.js";
 import { writeRateLimit } from "@/middlewares/rate-limit.middleware.js";
+import { postSlugParamSchema } from "../post/post.schema.js";
 
 const commentRoutes = Router();
 
 commentRoutes
   .route("/posts/:slug/comments")
-  .get(validate(listCommentsQuerySchema), CommentsController.listByPost)
+  .get(
+    validateParams(postSlugParamSchema),
+    validateQuery(listCommentsQuerySchema),
+    CommentsController.listByPost
+  )
   .post(
     requireAuth,
     writeRateLimit,
-    validate(createCommentSchema),
+    validateBody(createCommentSchema),
     CommentsController.createComment
   );
 
 commentRoutes.delete(
   "/comments/:commentId",
   requireAuth,
-  validate(commentIdParamSchema),
+  validateParams(commentIdParamSchema),
   CommentsController.deleteComment
 );
 export default commentRoutes;

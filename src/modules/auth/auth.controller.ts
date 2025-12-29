@@ -1,15 +1,14 @@
 // src/modules/auth/auth.controller.ts
-import { NextFunction, Request, Response } from "express";
-import { LoginInput, SignupInput } from "./auth.schema.js";
+import { Request, Response } from "express";
+import { loginSchema, signupSchema } from "./auth.schema.js";
 import * as AuthService from "./auth.service.js";
 import { refreshCookieOptions } from "@/utils/cookies.js";
 import { sendResponse } from "@/utils/api-response.js";
 import { UnauthorizedError } from "@/errors/http-errors.js";
 import { findUserById } from "./auth.repository.js";
 
-export async function signup(req: Request, res: Response, _next: NextFunction) {
-  const { username, email, password } = req.validated!
-    .body as SignupInput["body"];
+export async function signup(req: Request, res: Response) {
+  const { username, email, password } = signupSchema.parse(req.body);
 
   const { user, tokens } = await AuthService.signup(username, email, password);
 
@@ -30,8 +29,8 @@ export async function signup(req: Request, res: Response, _next: NextFunction) {
   });
 }
 
-export async function login(req: Request, res: Response, _next: NextFunction) {
-  const { email, password } = req.validated!.body as LoginInput["body"];
+export async function login(req: Request, res: Response) {
+  const { email, password } = loginSchema.parse(req.body);
 
   const { user, tokens } = await AuthService.login(email, password);
 
@@ -51,11 +50,7 @@ export async function login(req: Request, res: Response, _next: NextFunction) {
   });
 }
 
-export async function refresh(
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) {
+export async function refresh(req: Request, res: Response) {
   const token = req.cookies?.refreshToken;
 
   if (!token) throw new UnauthorizedError();
@@ -72,7 +67,7 @@ export async function refresh(
   });
 }
 
-export async function logout(req: Request, res: Response, _next: NextFunction) {
+export async function logout(req: Request, res: Response) {
   await AuthService.logout(req.user!.id);
   res.clearCookie("refreshToken", refreshCookieOptions);
 
@@ -81,7 +76,7 @@ export async function logout(req: Request, res: Response, _next: NextFunction) {
   });
 }
 
-export async function me(req: Request, res: Response, _next: NextFunction) {
+export async function me(req: Request, res: Response) {
   const [user] = await findUserById(req.user!.id);
 
   return sendResponse(res, {
