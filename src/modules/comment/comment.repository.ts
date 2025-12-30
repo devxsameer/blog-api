@@ -1,18 +1,27 @@
 // src/modules/comment/comment.repository.ts
 import { db } from "@/db/index.js";
 import { commentsTable } from "@/db/schema/comments.js";
-import { and, asc, eq, gt } from "drizzle-orm";
+import { usersTable } from "@/db/schema/users.js";
+import { and, desc, eq, getTableColumns, lt } from "drizzle-orm";
 
 export function findByPost(postId: string, limit: number, cursor?: Date) {
   const whereClause = cursor
-    ? and(eq(commentsTable.postId, postId), gt(commentsTable.createdAt, cursor))
+    ? and(eq(commentsTable.postId, postId), lt(commentsTable.createdAt, cursor))
     : eq(commentsTable.postId, postId);
 
   return db
-    .select()
+    .select({
+      ...getTableColumns(commentsTable),
+      author: {
+        id: usersTable.id,
+        username: usersTable.username,
+        avatarUrl: usersTable.avatarUrl,
+      },
+    })
     .from(commentsTable)
+    .innerJoin(usersTable, eq(commentsTable.authorId, usersTable.id))
     .where(whereClause)
-    .orderBy(asc(commentsTable.createdAt))
+    .orderBy(desc(commentsTable.createdAt))
     .limit(limit + 1);
 }
 
