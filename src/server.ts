@@ -7,7 +7,7 @@ const PORT = env.PORT || 6969;
 
 const server = app.listen(PORT, () => {
   console.log(
-    `✅ InnerCircles running on http://localhost:${PORT} (${
+    `✅ blog-api running on http://localhost:${PORT} (${
       env.NODE_ENV || "development"
     })`
   );

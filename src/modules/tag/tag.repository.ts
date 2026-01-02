@@ -1,7 +1,7 @@
 // src/modules/tag/tag.repository.ts
 import { db } from "@/db/index.js";
 import { postTagsTable, tagsTable } from "@/db/schema/tags.js";
-import { inArray, eq, desc, sql } from "drizzle-orm";
+import { inArray, eq, desc, sql, getTableColumns } from "drizzle-orm";
 
 export async function insertTags(names: string[]) {
   if (!names.length) return [];
@@ -54,12 +54,13 @@ export async function findTagsByPostId(postId: string) {
 export async function findPopularTags(limit = 10) {
   return db
     .select({
+      id: tagsTable.id,
       name: tagsTable.name,
       count: sql<number>`count(*)`,
     })
-    .from(postTagsTable)
-    .innerJoin(tagsTable, eq(postTagsTable.tagId, tagsTable.id))
-    .groupBy(tagsTable.name)
+    .from(tagsTable)
+    .innerJoin(postTagsTable, eq(postTagsTable.tagId, tagsTable.id))
+    .groupBy(tagsTable.id, tagsTable.name)
     .orderBy(desc(sql`count(*)`))
     .limit(limit);
 }
