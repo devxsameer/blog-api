@@ -75,9 +75,14 @@ export async function refresh(refreshToken: string) {
 
   if (!stored) throw new UnauthorizedError();
 
+  const [user] = await AuthRepo.findUserById(payload.sub);
+  if (!user || !user.isActive) {
+    throw new UnauthorizedError();
+  }
+
   await AuthRepo.revokeRefreshToken(tokenHash);
 
-  return issueTokens(payload.sub, undefined);
+  return issueTokens(user.id, user.role);
 }
 
 export async function logout(userId: string) {

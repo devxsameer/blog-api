@@ -6,6 +6,17 @@ export const listPostsQuerySchema = z.object({
   cursor: z.iso.datetime().optional(),
 });
 
+export const dashboardPostsQuerySchema = z.object({
+  status: z.enum(["draft", "published", "archived"]).optional(),
+  authorId: z.uuid().optional(), // ADMIN only
+  sort: z.enum(["createdAt", "updatedAt", "publishedAt"]).default("createdAt"),
+  order: z.enum(["asc", "desc"]).default("desc"),
+  limit: z.coerce.number().min(1).max(50).default(20),
+  cursor: z.iso.datetime().optional(),
+});
+
+export type DashboardPostsQuery = z.infer<typeof dashboardPostsQuerySchema>;
+
 export const createPostSchema = z.object({
   title: z.string().trim().min(3).max(255),
   contentMarkdown: z.string().min(10),

@@ -18,7 +18,7 @@ export function globalErrorHandler(
         code: "VALIDATION_ERROR",
         message: "Invalid request data",
         issues: err.issues.map((e) => ({
-          path: e.path.slice(1).join("."),
+          path: e.path.join("."),
           message: e.message,
         })),
       },

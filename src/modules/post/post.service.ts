@@ -6,7 +6,12 @@ import { canDeletePost, canUpdatePost, canViewPost } from "./post.policy.js";
 import { AuthUser } from "@/@types/auth.js";
 import * as TagService from "@/modules/tag/tag.service.js";
 import * as TagRepo from "@/modules/tag/tag.repository.js";
-import { CreatePostBody, UpdatePostBody } from "./post.schema.js";
+import {
+  CreatePostBody,
+  DashboardPostsQuery,
+  UpdatePostBody,
+} from "./post.schema.js";
+import { Role } from "@/constants/roles.js";
 
 export async function listPublishedPosts({
   limit,
@@ -35,6 +40,44 @@ export async function listPublishedPosts({
     pageInfo: {
       nextCursor,
       hasNextPage,
+    },
+  };
+}
+export async function listDashboardPosts(
+  user: AuthUser,
+  query: DashboardPostsQuery
+) {
+  const filters: any = {
+    status: query.status,
+  };
+
+  // AUTHOR → force ownership
+  if (user.role === Role.AUTHOR) {
+    filters.authorId = user.id;
+  }
+
+  // ADMIN → optional author filter
+  if (user.role === Role.ADMIN && query.authorId) {
+    filters.authorId = query.authorId;
+  }
+
+  const posts = await PostRepo.findDashboardPosts({
+    ...filters,
+    limit: query.limit,
+    cursor: query.cursor ? new Date(query.cursor) : undefined,
+    sort: query.sort,
+    order: query.order,
+  });
+
+  const hasNextPage = posts.length > query.limit;
+
+  return {
+    items: hasNextPage ? posts.slice(0, query.limit) : posts,
+    pageInfo: {
+      hasNextPage,
+      nextCursor: hasNextPage
+        ? posts[query.limit - 1][query.sort]?.toISOString()
+        : null,
     },
   };
 }

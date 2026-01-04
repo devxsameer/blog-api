@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 import {
   createPostSchema,
+  dashboardPostsQuerySchema,
   listPostsQuerySchema,
   postSlugParamSchema,
   updatePostSchema,
@@ -9,7 +10,7 @@ import {
 import * as PostService from "./post.service.js";
 import { sendResponse } from "@/utils/api-response.js";
 
-export async function list(req: Request, res: Response) {
+export async function listPublic(req: Request, res: Response) {
   const { limit, cursor } = listPostsQuerySchema.parse(req.query);
 
   const result = await PostService.listPublishedPosts({
@@ -17,6 +18,17 @@ export async function list(req: Request, res: Response) {
     cursor,
     userId: req.user?.id,
   });
+
+  return sendResponse(res, {
+    data: result.items,
+    meta: result.pageInfo,
+  });
+}
+
+export async function listDashboard(req: Request, res: Response) {
+  const query = dashboardPostsQuerySchema.parse(req.query);
+
+  const result = await PostService.listDashboardPosts(req.user!, query);
 
   return sendResponse(res, {
     data: result.items,

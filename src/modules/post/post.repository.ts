@@ -4,7 +4,7 @@ import { postLikesTable } from "@/db/schema/post-likes.js";
 import { postViewsTable } from "@/db/schema/post-views.js";
 import { postsTable } from "@/db/schema/posts.js";
 import { usersTable } from "@/db/schema/users.js";
-import { and, desc, eq, getTableColumns, lt, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, lt, sql } from "drizzle-orm";
 
 export function createPost(data: typeof postsTable.$inferInsert) {
   return db.insert(postsTable).values(data).returning();
@@ -88,6 +88,34 @@ export function findPublishedPostsCursor({
     .from(postsTable)
     .where(whereClause)
     .orderBy(desc(postsTable.publishedAt))
+    .limit(limit + 1);
+}
+export function findDashboardPosts({
+  authorId,
+  status,
+  limit,
+  cursor,
+  sort,
+  order,
+}: {
+  authorId?: string;
+  status?: "published" | "archived" | "draft";
+  limit: number;
+  cursor?: Date;
+  sort: "createdAt" | "updatedAt" | "publishedAt";
+  order: "asc" | "desc";
+}) {
+  const conditions = [];
+
+  if (authorId) conditions.push(eq(postsTable.authorId, authorId));
+  if (status) conditions.push(eq(postsTable.status, status));
+  if (cursor) conditions.push(lt(postsTable[sort], cursor));
+
+  return db
+    .select()
+    .from(postsTable)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(order === "asc" ? asc(postsTable[sort]) : desc(postsTable[sort]))
     .limit(limit + 1);
 }
 

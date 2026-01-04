@@ -13,6 +13,7 @@ import {
 } from "@/middlewares/validate.middleware.js";
 import {
   createPostSchema,
+  dashboardPostsQuerySchema,
   listPostsQuerySchema,
   postSlugParamSchema,
   updatePostSchema,
@@ -22,13 +23,21 @@ import { publicReadRateLimit } from "@/middlewares/rate-limit.middleware.js";
 
 const postRoutes = Router();
 
+postRoutes.get(
+  "/dashboard",
+  requireAuth,
+  requireRole(Role.ADMIN, Role.AUTHOR),
+  validateQuery(dashboardPostsQuerySchema),
+  PostController.listDashboard
+);
+
 postRoutes
   .route("/")
   .get(
     publicReadRateLimit,
     optionalAuth,
     validateQuery(listPostsQuerySchema),
-    PostController.list
+    PostController.listPublic
   )
   .post(
     requireAuth,
