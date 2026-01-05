@@ -75,12 +75,19 @@ export function findPublishedPostsCursor({
 
   return db
     .select({
-      ...getTableColumns(postsTable),
+      id: postsTable.id,
+      authorId: postsTable.authorId,
+      title: postsTable.title,
+      slug: postsTable.slug,
+      excerpt: postsTable.excerpt,
+      viewCount: postsTable.viewCount,
+      likeCount: postsTable.likeCount,
+      publishedAt: postsTable.publishedAt,
       likedByMe: userId
         ? sql<boolean>`exists (
-            select 1
-            from ${postLikesTable} pl
-            where pl.post_id = ${postsTable.id}
+            select 1 
+            from ${postLikesTable} pl 
+            where pl.post_id = ${postsTable.id} 
               and pl.user_id = ${userId}
           )`
         : sql<boolean>`false`,
@@ -90,6 +97,7 @@ export function findPublishedPostsCursor({
     .orderBy(desc(postsTable.publishedAt))
     .limit(limit + 1);
 }
+
 export function findDashboardPosts({
   authorId,
   status,
@@ -112,7 +120,18 @@ export function findDashboardPosts({
   if (cursor) conditions.push(lt(postsTable[sort], cursor));
 
   return db
-    .select()
+    .select({
+      id: postsTable.id,
+      authorId: postsTable.authorId,
+      title: postsTable.title,
+      status: postsTable.status,
+      slug: postsTable.slug,
+      viewCount: postsTable.viewCount,
+      likeCount: postsTable.likeCount,
+      createdAt: postsTable.createdAt,
+      updatedAt: postsTable.updatedAt,
+      publishedAt: postsTable.publishedAt,
+    })
     .from(postsTable)
     .where(conditions.length ? and(...conditions) : undefined)
     .orderBy(order === "asc" ? asc(postsTable[sort]) : desc(postsTable[sort]))
