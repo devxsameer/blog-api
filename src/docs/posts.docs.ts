@@ -70,3 +70,10 @@ openApiDocument.paths["/posts"] = {
     },
   },
 };
+
+openApiDocument.tags = [
+  { name: "Auth", description: "Authentication & session management" },
+  { name: "Posts", description: "Public and dashboard post APIs" },
+  { name: "Comments", description: "Post comments" },
+  { name: "Dashboard", description: "Admin & author analytics" },
+];

@@ -1,6 +1,7 @@
 // src/docs/openapi.ts
 import { OpenAPIV3 } from "openapi-types";
 import { commonSchemas } from "./schemas.js";
+import { commonResponses } from "./responses.js";
 
 export const openApiDocument: OpenAPIV3.Document = {
   openapi: "3.0.3",
@@ -57,4 +58,8 @@ openApiDocument.components!.schemas = {
       publishedAt: { type: "string", format: "date-time", nullable: true },
     },
   },
+};
+
+openApiDocument.components!.responses = {
+  ...commonResponses,
 };

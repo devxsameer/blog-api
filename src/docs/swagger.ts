@@ -3,6 +3,7 @@ import { openApiDocument } from "./openapi.js";
 
 // import docs so they register themselves
 import "./posts.docs.js";
+import "./dashboard.docs.js";
 // import "./auth.docs.js"; // later
 // import "./comments.docs.js";
 
