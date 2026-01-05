@@ -40,7 +40,7 @@ export async function getPost(req: Request, res: Response) {
   const { slug } = postSlugParamSchema.parse(req.params);
   const user = req.user ?? null;
 
-  const post = await PostService.getPostBySlug(user, slug, req.ip!);
+  const post = await PostService.getPostBySlug(user, slug, req.ip!,req.authError);
 
   return sendResponse(res, {
     data: post,

@@ -1,7 +1,7 @@
 // src/modules/post/post.service.ts
 import { generateSlug } from "@/utils/slug.js";
 import * as PostRepo from "./post.repository.js";
-import { ForbiddenError, NotFoundError } from "@/errors/http-errors.js";
+import { ForbiddenError, NotFoundError, UnauthorizedError } from "@/errors/http-errors.js";
 import { canDeletePost, canUpdatePost, canViewPost } from "./post.policy.js";
 import { AuthUser } from "@/@types/auth.js";
 import * as TagService from "@/modules/tag/tag.service.js";
@@ -105,11 +105,20 @@ export async function createPost(authorId: string, input: CreatePostBody) {
 export async function getPostBySlug(
   user: AuthUser | null,
   slug: string,
-  ip: string
+  ip: string,
+  authError?: string
 ) {
   const [post] = await PostRepo.findPostBySlugWithLikeStatus(slug, user?.id);
 
   if (!post) throw new NotFoundError("Post");
+
+   if (!user && post.status !== "published") {
+    if (authError) {
+      throw new UnauthorizedError("Session expired");
+    }
+    
+    throw new ForbiddenError("Login required");
+  }
 
   if (!canViewPost(user, post)) {
     throw new ForbiddenError("You cannot view this post");

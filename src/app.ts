@@ -14,6 +14,7 @@ import postRoutes from "./modules/post/post.routes.js";
 import commentRoutes from "./modules/comment/comment.routes.js";
 import postLikesRoutes from "./modules/post-like/post-like.routes.js";
 import tagRoutes from "./modules/tag/tag.routes.js";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 
 import { NotFoundError } from "./errors/http-errors.js";
 import { swaggerHandler, swaggerMiddleware } from "./docs/swagger.js";
@@ -48,6 +49,7 @@ app.use("/api", (req, res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/tags", tagRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api", commentRoutes);
 app.use("/api", postLikesRoutes);
 

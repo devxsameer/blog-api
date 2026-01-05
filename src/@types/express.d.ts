@@ -14,6 +14,7 @@ declare global {
         query?: any;
       };
       user?: AuthUser;
+      authError?:string;
     }
   }
 }

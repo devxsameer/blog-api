@@ -4,7 +4,8 @@
     "post",
     "db",
     "validation",
-    "comments"
+    "comments",
+    "dashboard"
   ],
   "cSpell.words": ["unliked"],
   "postman.settings.dotenv-detection-notification-visibility": false

@@ -43,7 +43,9 @@ export const optionalAuth: RequestHandler = (req, _res, next) => {
       id: payload.sub,
       role: payload.role,
     };
-  } catch {}
+  } catch {
+    req.authError = "invalid_token";
+  }
 
   next();
 };
