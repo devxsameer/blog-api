@@ -11,7 +11,7 @@ import {
   listCommentsQuerySchema,
 } from "./comment.schema.js";
 import * as CommentsController from "./comment.controller.js";
-import { requireAuth } from "@/middlewares/auth.middleware.js";
+import { blockReadOnly, requireAuth } from "@/middlewares/auth.middleware.js";
 import { writeRateLimit } from "@/middlewares/rate-limit.middleware.js";
 import { postSlugParamSchema } from "../post/post.schema.js";
 
@@ -34,6 +34,7 @@ commentRoutes
 commentRoutes.delete(
   "/comments/:commentId",
   requireAuth,
+  blockReadOnly,
   validateParams(commentIdParamSchema),
   CommentsController.deleteComment
 );

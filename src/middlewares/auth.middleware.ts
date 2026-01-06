@@ -20,6 +20,7 @@ export const requireAuth: RequestHandler = (req, _res, next) => {
     req.user = {
       id: payload.sub,
       role: payload.role,
+      isReadOnly: payload.isReadOnly,
     };
 
     next();
@@ -42,6 +43,7 @@ export const optionalAuth: RequestHandler = (req, _res, next) => {
     req.user = {
       id: payload.sub,
       role: payload.role,
+      isReadOnly: payload.isReadOnly,
     };
   } catch {
     req.authError = "invalid_token";
@@ -63,3 +65,12 @@ export const requireRole =
 
     next();
   };
+
+export const blockReadOnly: RequestHandler = (req, _res, next) => {
+  if (!req.user) throw new UnauthorizedError();
+  if (req.user.isReadOnly) {
+    throw new ForbiddenError("Demo account is read-only");
+  }
+
+  next();
+};

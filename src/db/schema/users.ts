@@ -21,6 +21,7 @@ export const usersTable = pgTable(
     passwordHash: text("password_hash").notNull(),
 
     role: roleEnum().default("user").notNull(),
+    isReadOnly: boolean("is_read_only").notNull().default(false),
 
     bio: text("bio"),
     avatarUrl: text("avatar_url"),

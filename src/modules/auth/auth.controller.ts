@@ -44,6 +44,7 @@ export async function login(req: Request, res: Response) {
         username: user.username,
         email: user.email,
         role: user.role,
+        isReadOnly: user.isReadOnly,
       },
       accessToken: tokens.accessToken,
     },
@@ -87,6 +88,7 @@ export async function me(req: Request, res: Response) {
         username: user.username,
         email: user.email,
         role: user.role,
+        isReadOnly: user.isReadOnly,
       },
     },
   });

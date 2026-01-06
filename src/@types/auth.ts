@@ -4,4 +4,5 @@ import { Role } from "@/constants/roles.js";
 export interface AuthUser {
   id: string;
   role: Role;
+  isReadOnly: boolean;
 }

@@ -194,22 +194,33 @@ Response:
 
 ---
 
-## 📖 API Documentation (Swagger)
+## 📖 API Documentation (Swagger / OpenAPI)
 
-Interactive OpenAPI docs available at:
+This API includes full OpenAPI 3 documentation generated manually alongside the codebase.
 
-```bash
-/docs
-```
+### Availability
 
-Features:
+- **Development:**  
+  Swagger UI is available at:
 
-- JWT Bearer authentication
-- Request/response schemas
-- Pagination & auth documented
-- Clean separation from controllers
+  ```bash
+  http://localhost:6969/docs
+  ```
 
-> Docs are disabled in production for security.
+- **Production:**  
+  API documentation is intentionally **not publicly exposed** to reduce attack surface.
+
+In production, `/docs` can be enabled behind authentication (ADMIN-only) or accessed via a private deployment.
+
+### Why not public in prod?
+
+Exposing API schemas publicly in production can:
+
+- Leak internal API structure
+- Increase enumeration risk
+- Expand attack surface
+
+This project follows **security-first practices** by restricting documentation access in production.
 
 ---
 

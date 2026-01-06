@@ -1,5 +1,6 @@
 // src/modules/post/post.routes.ts
 import {
+  blockReadOnly,
   optionalAuth,
   requireAuth,
   requireRole,
@@ -42,6 +43,7 @@ postRoutes
   .post(
     requireAuth,
     requireRole(Role.ADMIN, Role.AUTHOR),
+    blockReadOnly,
     validateBody(createPostSchema),
     PostController.createPost
   );
@@ -56,12 +58,14 @@ postRoutes
   )
   .put(
     requireAuth,
+    blockReadOnly,
     validateParams(postSlugParamSchema),
     validateBody(updatePostSchema),
     PostController.updatePost
   )
   .delete(
     requireAuth,
+    blockReadOnly,
     validateParams(postSlugParamSchema),
     PostController.deletePost
   );

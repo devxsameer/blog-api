@@ -28,7 +28,7 @@ export async function signup(
   const passwordHash = await hashPassword(password);
 
   const [user] = await AuthRepo.createUser({ username, email, passwordHash });
-  const tokens = await issueTokens(user.id, user.role);
+  const tokens = await issueTokens(user.id, user.isReadOnly, user.role);
 
   return {
     user: {
@@ -36,6 +36,7 @@ export async function signup(
       email: user.email,
       username: user.username,
       role: user.role,
+      isReadOnly: user.isReadOnly,
     },
     tokens,
   };
@@ -54,7 +55,7 @@ export async function login(email: string, password: string) {
     throw new UnauthorizedError("Invalid email or password");
   }
 
-  const tokens = await issueTokens(user.id, user.role);
+  const tokens = await issueTokens(user.id, user.isReadOnly, user.role);
 
   return {
     user: {
@@ -62,6 +63,7 @@ export async function login(email: string, password: string) {
       email: user.email,
       username: user.username,
       role: user.role,
+      isReadOnly: user.isReadOnly,
     },
     tokens,
   };
@@ -82,7 +84,7 @@ export async function refresh(refreshToken: string) {
 
   await AuthRepo.revokeRefreshToken(tokenHash);
 
-  return issueTokens(user.id, user.role);
+  return issueTokens(user.id, user.isReadOnly, user.role);
 }
 
 export async function logout(userId: string) {
@@ -93,8 +95,8 @@ function hashToken(token: string) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
-async function issueTokens(userId: string, role?: string) {
-  const accessToken = signAccessToken(userId, role ?? "user");
+async function issueTokens(userId: string, isReadOnly: boolean, role?: string) {
+  const accessToken = signAccessToken(userId, role ?? "user", isReadOnly);
   const refreshToken = signRefreshToken(userId);
 
   await AuthRepo.saveRefreshToken({
