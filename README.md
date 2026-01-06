@@ -8,6 +8,23 @@ This project demonstrates **real-world backend engineering practices** including
 
 ---
 
+## ⭐ Why This Project Matters
+
+This is not a CRUD demo.
+
+It demonstrates:
+
+- Real authentication flows
+- Scalable pagination
+- Proper authorization modeling
+- Production-grade security
+- Clean, maintainable backend architecture
+
+If you’re reviewing this repo:  
+👉 this backend is **ready to be extended, deployed, and scaled.**
+
+---
+
 ## 🚀 Features
 
 ### 🔐 Authentication & Security
@@ -53,7 +70,8 @@ This project demonstrates **real-world backend engineering practices** including
   - repositories
   - policies
 - Zod-based request validation
-- Typed request lifecycle (`req.validated`)
+- Zod-based request validation at API boundaries
+- Centralized validation middleware for params, body, and query
 - Centralized error handling
 - Structured logging with request IDs
 - OpenAPI / Swagger documentation
@@ -131,6 +149,13 @@ src/
 - All refresh tokens revoked
 - Cookie cleared
 
+### Refresh Token Rotation
+
+- Refresh tokens are **hashed before storage**
+- Each refresh request **revokes the previous token**
+- Reuse of revoked tokens is rejected
+- All active refresh tokens are revoked on logout
+
 ---
 
 ## 📚 Pagination Strategy (Cursor-Based)
@@ -172,7 +197,7 @@ Response:
 
 ### Views
 
-- IP-based deduplication
+- IP-based view deduplication with transactional counter updates
 - Author views excluded
 - View count stored on post
 - Separate `post_views` table for analytics
@@ -267,18 +292,3 @@ pnpm db:studio
 
 Backend-focused full-stack developer
 Passionate about clean architecture, scalable APIs, and real-world systems.
-
-## ⭐ Why This Project Matters
-
-This is not a CRUD demo.
-
-It demonstrates:
-
-- Real authentication flows
-- Scalable pagination
-- Proper authorization modeling
-- Production-grade security
-- Clean, maintainable backend architecture
-
-If you’re reviewing this repo:  
-👉 this backend is **ready to be extended, deployed, and scaled.**
