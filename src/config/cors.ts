@@ -13,7 +13,7 @@ const DEV_ORIGINS = [
 
 const PROD_ORIGINS = [
   "https://blog.devxsameer.me",
-  "https://blogdashboard.devxsameer.me",
+  "https://dashboard.blog.devxsameer.me",
 ];
 
 export const ALLOWED_ORIGINS =
