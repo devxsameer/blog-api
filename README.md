@@ -286,6 +286,16 @@ pnpm db:studio
 
 ---
 
+## 📋 Project Analysis & Career Guidance
+
+Looking for detailed analysis and career guidance?
+
+- **[📊 PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md)** - Comprehensive technical analysis of this project (architecture, security, code quality)
+- **[💼 CAREER_GUIDANCE.md](./CAREER_GUIDANCE.md)** - Detailed salary expectations, job search strategy, and career roadmap
+- **[🎯 QUICK_SUMMARY.md](./QUICK_SUMMARY.md)** - TL;DR of analysis, salary ranges, and next steps
+
+---
+
 ## 👤 Author
 
 ### Sameer Ali
