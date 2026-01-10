@@ -1,9 +1,10 @@
 // src/env.ts
-import "dotenv/config";
 import z from "zod";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.string().default("6969"),
   DATABASE_URL: z.url(),
   ACCESS_TOKEN_SECRET: z.string(),

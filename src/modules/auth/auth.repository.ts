@@ -30,24 +30,21 @@ export function findValidRefreshToken(tokenHash: string) {
 export function revokeRefreshToken(tokenHash: string) {
   return db
     .update(refreshTokensTable)
-    .set({ lastUsedAt: new Date() })
-    .set({ revokedAt: new Date() })
+    .set({ lastUsedAt: new Date(), revokedAt: new Date() })
     .where(eq(refreshTokensTable.tokenHash, tokenHash));
 }
 
 export function revokeTokenFamily(familyId: string) {
   return db
     .update(refreshTokensTable)
-    .set({ lastUsedAt: new Date() })
-    .set({ revokedAt: new Date() })
+    .set({ lastUsedAt: new Date(), revokedAt: new Date() })
     .where(eq(refreshTokensTable.familyId, familyId));
 }
 
 export function revokeAllUserTokens(userId: string) {
   return db
     .update(refreshTokensTable)
-    .set({ lastUsedAt: new Date() })
-    .set({ revokedAt: new Date() })
+    .set({ lastUsedAt: new Date(), revokedAt: new Date() })
     .where(
       and(
         eq(refreshTokensTable.userId, userId),
