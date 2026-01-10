@@ -43,6 +43,13 @@
       "when": 1767696463884,
       "tag": "0005_elite_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1768047284295,
+      "tag": "0006_yielding_blue_blade",
+      "breakpoints": true
     }
   ]
 }
