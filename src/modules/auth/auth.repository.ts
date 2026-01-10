@@ -1,50 +1,15 @@
 // src/modules/auth/auth.repository.ts
 import { db } from "@/db/index.js";
 import { refreshTokensTable } from "@/db/schema/tokens.js";
-import { usersTable } from "@/db/schema/users.js";
 import { and, eq, isNull } from "drizzle-orm";
-
-// Find user function shall be transferred to user module (JUST HERE FOR NOW)
-export function findUserById(id: string) {
-  return db
-    .select()
-    .from(usersTable)
-    .where(
-      and(
-        eq(usersTable.id, id),
-        eq(usersTable.isActive, true),
-        isNull(usersTable.deletedAt)
-      )
-    )
-    .limit(1);
-}
-
-export function findUserByEmail(email: string) {
-  return db
-    .select()
-    .from(usersTable)
-    .where(
-      and(
-        eq(usersTable.email, email),
-        eq(usersTable.isActive, true),
-        isNull(usersTable.deletedAt)
-      )
-    )
-    .limit(1);
-}
-
-export function createUser(data: {
-  username: string;
-  email: string;
-  passwordHash: string;
-}) {
-  return db.insert(usersTable).values(data).returning();
-}
 
 export function saveRefreshToken(data: {
   userId: string;
   tokenHash: string;
+  familyId: string;
   expiresAt: Date;
+  ipAddress?: string;
+  userAgent?: string;
 }) {
   return db.insert(refreshTokensTable).values(data).returning();
 }
@@ -65,13 +30,23 @@ export function findValidRefreshToken(tokenHash: string) {
 export function revokeRefreshToken(tokenHash: string) {
   return db
     .update(refreshTokensTable)
+    .set({ lastUsedAt: new Date() })
     .set({ revokedAt: new Date() })
     .where(eq(refreshTokensTable.tokenHash, tokenHash));
+}
+
+export function revokeTokenFamily(familyId: string) {
+  return db
+    .update(refreshTokensTable)
+    .set({ lastUsedAt: new Date() })
+    .set({ revokedAt: new Date() })
+    .where(eq(refreshTokensTable.familyId, familyId));
 }
 
 export function revokeAllUserTokens(userId: string) {
   return db
     .update(refreshTokensTable)
+    .set({ lastUsedAt: new Date() })
     .set({ revokedAt: new Date() })
     .where(
       and(

@@ -5,26 +5,33 @@ import * as AuthService from "./auth.service.js";
 import { refreshCookieOptions } from "@/utils/cookies.js";
 import { sendResponse } from "@/utils/api-response.js";
 import { UnauthorizedError } from "@/errors/http-errors.js";
-import { findUserById } from "./auth.repository.js";
+import { findUserById } from "@/modules/user/user.repository.js";
+
+function getMeta(req: Request) {
+  return {
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  };
+}
 
 export async function signup(req: Request, res: Response) {
   const { username, email, password } = signupSchema.parse(req.body);
 
-  const { user, tokens } = await AuthService.signup(username, email, password);
+  const { user, accessToken, refreshToken } = await AuthService.signup(
+    username,
+    email,
+    password,
+    getMeta(req)
+  );
 
-  res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   return sendResponse(res, {
     statusCode: 201,
     message: "User account created successfully.",
     data: {
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-      accessToken: tokens.accessToken,
+      user,
+      accessToken: accessToken,
     },
   });
 }
@@ -32,21 +39,19 @@ export async function signup(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   const { email, password } = loginSchema.parse(req.body);
 
-  const { user, tokens } = await AuthService.login(email, password);
+  const { user, accessToken, refreshToken } = await AuthService.login(
+    email,
+    password,
+    getMeta(req)
+  );
 
-  res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   return sendResponse(res, {
     message: "Logged in successfully.",
     data: {
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        isReadOnly: user.isReadOnly,
-      },
-      accessToken: tokens.accessToken,
+      user,
+      accessToken: accessToken,
     },
   });
 }
@@ -56,24 +61,32 @@ export async function refresh(req: Request, res: Response) {
 
   if (!token) throw new UnauthorizedError();
 
-  const tokens = await AuthService.refresh(token);
+  const { accessToken, refreshToken } = await AuthService.refresh(
+    token,
+    getMeta(req)
+  );
 
-  res.cookie("refreshToken", tokens.refreshToken, refreshCookieOptions);
+  res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
   return sendResponse(res, {
     message: "Access token refreshed.",
     data: {
-      accessToken: tokens.accessToken,
+      accessToken: accessToken,
     },
   });
 }
 
 export async function logout(req: Request, res: Response) {
-  await AuthService.logout(req.user!.id);
+  const token = req.cookies?.refreshToken;
+
+  if (token) {
+    await AuthService.logout(token);
+  }
+
   res.clearCookie("refreshToken", refreshCookieOptions);
 
   return sendResponse(res, {
-    message: "Logged out successfully.",
+    message: "Logged out successfully",
   });
 }
 
@@ -83,13 +96,7 @@ export async function me(req: Request, res: Response) {
   return sendResponse(res, {
     message: "Authenticated user",
     data: {
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        isReadOnly: user.isReadOnly,
-      },
+      user,
     },
   });
 }

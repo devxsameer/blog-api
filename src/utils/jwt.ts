@@ -8,14 +8,8 @@ export function signAccessToken(
   role: string,
   isReadOnly: boolean
 ) {
-  return jwt.sign({ sub: userId, role, isReadOnly }, env.ACCESS_TOKEN_SECRET!, {
+  return jwt.sign({ sub: userId, role, isReadOnly }, env.ACCESS_TOKEN_SECRET, {
     expiresIn: "15m",
-  });
-}
-
-export function signRefreshToken(userId: string) {
-  return jwt.sign({ sub: userId }, env.REFRESH_TOKEN_SECRET!, {
-    expiresIn: "7d",
   });
 }
 
@@ -24,10 +18,5 @@ export function verifyAccessToken(token: string) {
     sub: string;
     role: Role;
     isReadOnly: boolean;
-  };
-}
-export function verifyRefreshToken(token: string) {
-  return jwt.verify(token, env.REFRESH_TOKEN_SECRET) as {
-    sub: string;
   };
 }

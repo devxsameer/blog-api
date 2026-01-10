@@ -1,21 +1,31 @@
 // src/modules/auth/auth.service.ts
-import {
-  signAccessToken,
-  signRefreshToken,
-  verifyRefreshToken,
-} from "@/utils/jwt.js";
+import { signAccessToken } from "@/utils/jwt.js";
 import * as AuthRepo from "./auth.repository.js";
+import * as UserRepo from "@/modules/user/user.repository.js";
 import { ApiError } from "@/errors/api-error.js";
-import crypto from "node:crypto";
 import { hashPassword, verifyPassword } from "@/utils/password.js";
 import { UnauthorizedError } from "@/errors/http-errors.js";
+import {
+  generateFamilyId,
+  generateOpaqueToken,
+  hashToken,
+} from "./auth.utils.js";
+import { presentUser } from "../user/user.presenter.js";
+
+const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000;
+
+export interface RequestMeta {
+  ip?: string;
+  userAgent?: string;
+}
 
 export async function signup(
   username: string,
   email: string,
-  password: string
+  password: string,
+  meta: RequestMeta
 ) {
-  const existing = await AuthRepo.findUserByEmail(email);
+  const existing = await UserRepo.findUserByEmail(email);
 
   if (existing.length) {
     throw new ApiError(
@@ -27,23 +37,22 @@ export async function signup(
 
   const passwordHash = await hashPassword(password);
 
-  const [user] = await AuthRepo.createUser({ username, email, passwordHash });
-  const tokens = await issueTokens(user.id, user.isReadOnly, user.role);
+  const [user] = await UserRepo.createUser({ username, email, passwordHash });
+  const { accessToken, refreshToken } = await issueTokens(user, meta);
 
   return {
-    user: {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      isReadOnly: user.isReadOnly,
-    },
-    tokens,
+    user: presentUser(user),
+    accessToken,
+    refreshToken,
   };
 }
 
-export async function login(email: string, password: string) {
-  const [user] = await AuthRepo.findUserByEmail(email);
+export async function login(
+  email: string,
+  password: string,
+  meta: RequestMeta
+) {
+  const [user] = await UserRepo.findUserByEmail(email);
 
   // Even if user is null, we verify against a dummy hash to prevent timing attacks.
   const passwordHash = user
@@ -52,57 +61,53 @@ export async function login(email: string, password: string) {
   const valid = await verifyPassword(passwordHash, password);
 
   if (!user || !valid) {
-    throw new UnauthorizedError("Invalid email or password");
+    throw new UnauthorizedError("Invalid credentials");
   }
 
-  const tokens = await issueTokens(user.id, user.isReadOnly, user.role);
+  const { accessToken, refreshToken } = await issueTokens(user, meta);
 
   return {
-    user: {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      isReadOnly: user.isReadOnly,
-    },
-    tokens,
+    user: presentUser(user),
+    accessToken,
+    refreshToken,
   };
 }
 
-export async function refresh(refreshToken: string) {
-  const payload = verifyRefreshToken(refreshToken);
+export async function refresh(refreshToken: string, meta: RequestMeta) {
   const tokenHash = hashToken(refreshToken);
 
   const [stored] = await AuthRepo.findValidRefreshToken(tokenHash);
 
-  if (!stored) throw new UnauthorizedError();
+  if (!stored) throw new UnauthorizedError("Refresh token reuse detected");
 
-  const [user] = await AuthRepo.findUserById(payload.sub);
+  const [user] = await UserRepo.findUserById(stored.userId);
   if (!user || !user.isActive) {
     throw new UnauthorizedError();
   }
 
+  await AuthRepo.revokeTokenFamily(stored.familyId);
+
+  return issueTokens(user, meta);
+}
+
+export async function logout(refreshToken: string) {
+  const tokenHash = hashToken(refreshToken);
   await AuthRepo.revokeRefreshToken(tokenHash);
-
-  return issueTokens(user.id, user.isReadOnly, user.role);
 }
 
-export async function logout(userId: string) {
-  await AuthRepo.revokeAllUserTokens(userId);
-}
+async function issueTokens(user: any, meta: RequestMeta) {
+  const accessToken = signAccessToken(user.id, user.role, user.isReadOnly);
 
-function hashToken(token: string) {
-  return crypto.createHash("sha256").update(token).digest("hex");
-}
-
-async function issueTokens(userId: string, isReadOnly: boolean, role?: string) {
-  const accessToken = signAccessToken(userId, role ?? "user", isReadOnly);
-  const refreshToken = signRefreshToken(userId);
+  const refreshToken = generateOpaqueToken();
+  const familyId = generateFamilyId();
 
   await AuthRepo.saveRefreshToken({
-    userId,
+    userId: user.id,
     tokenHash: hashToken(refreshToken),
-    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    familyId,
+    expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL),
+    ipAddress: meta.ip,
+    userAgent: meta.userAgent,
   });
 
   return { accessToken, refreshToken };
