@@ -7,6 +7,7 @@ import {
   adminUpdateUserSchema,
   updateAvatarSchema,
   adminListUsersQuerySchema,
+  userIdParamSchema,
 } from "./user.schema.js";
 
 export async function updateMe(req: Request, res: Response) {
@@ -21,7 +22,7 @@ export async function updateMe(req: Request, res: Response) {
 
 export async function adminUpdateUser(req: Request, res: Response) {
   const data = adminUpdateUserSchema.parse(req.body);
-  const userId = req.params.userId;
+  const { userId } = userIdParamSchema.parse(req.params);
 
   const user = await UserService.adminUpdateUser(req.user!, userId, data);
 

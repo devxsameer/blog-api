@@ -21,3 +21,7 @@ export const adminListUsersQuerySchema = z.object({
 export const updateAvatarSchema = z.object({
   avatarUrl: z.url(),
 });
+
+export const userIdParamSchema = z.object({
+  userId: z.uuid(),
+});

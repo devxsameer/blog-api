@@ -7,7 +7,7 @@ const envSchema = z.object({
     .default("development"),
   PORT: z.string().default("6969"),
   DATABASE_URL: z.url(),
-  CLOUDINARY_URL: z.url(),
+  CLOUDINARY_URL: z.url().optional(),
   ACCESS_TOKEN_SECRET: z.string(),
   REFRESH_TOKEN_SECRET: z.string(),
   DB_DRIVER: z.enum(["pg", "neon"]).default("neon"),

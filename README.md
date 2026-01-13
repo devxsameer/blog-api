@@ -4,7 +4,7 @@ A **modern, scalable, and production-ready REST API** for a Markdown-based blogg
 
 This project demonstrates **real-world backend engineering practices** including authentication, authorization, modular architecture, cursor pagination, security hardening, and clean API design — built with **TypeScript, Express 5, PostgreSQL, Drizzle ORM, and Zod**.
 
-> ⚡ Designed as a portfolio-grade backend to showcase job-ready backend skills.
+> ⚡ This backend is intentionally over-engineered for a portfolio project to demonstrate real-world backend engineering decisions.
 
 ---
 
@@ -27,15 +27,18 @@ If you’re reviewing this repo:
 
 ## 🚀 Features
 
-### 🔐 Authentication & Security
+### 🔐 Authentication & Account Lifecycle
 
 - JWT **access tokens** (short-lived)
 - **Refresh tokens** via HTTP-only cookies
-- Secure logout & token rotation
+- Secure logout & refresh token rotation
+- Refresh tokens are **hashed before storage**
+- Token reuse detection & family revocation
 - Role-based access control (**USER / AUTHOR / ADMIN**)
-- Rate limiting on sensitive routes
+- Email verification with expiring, one-time tokens
+- Rate limiting on authentication & write endpoints
 - Security headers via **Helmet**
-- Proper CORS for multiple frontends
+- Strict CORS allowlist (no wildcard origins with credentials)
 
 ### ✍️ Blogging System
 
@@ -92,6 +95,63 @@ If you’re reviewing this repo:
 | Security   | Helmet, Rate Limiting  |
 | Logging    | Pino                   |
 | Docs       | Swagger (OpenAPI 3)    |
+
+---
+
+## 👤 Users & Admin Management
+
+The API includes a complete user management system designed for real-world applications.
+
+### User Capabilities
+
+- View authenticated user profile
+- Update own profile (username, bio)
+- Upload profile picture via signed uploads
+- Email verification workflow
+
+### Admin Capabilities
+
+- List all users with cursor-based pagination
+- Filter users by role and active status
+- Update user roles and activation state
+- Moderate platform access without hard deletes
+
+User operations follow strict **role-based authorization policies** and avoid destructive actions to preserve data integrity.
+
+---
+
+## 🖼️ Profile Picture Uploads (Signed Upload Pattern)
+
+Profile images are handled using an industry-standard **signed upload** pattern:
+
+1. Client requests an upload signature from the backend
+2. Image is uploaded **directly** to Cloudinary
+3. Backend stores only the final image URL
+
+### Why this approach?
+
+- Backend never processes files
+- No memory or DOS risk
+- Scales independently of API servers
+- Automatic image optimization & CDN delivery
+
+This mirrors how modern SaaS products handle user-generated media.
+
+---
+
+## 🛡️ Security Hardening
+
+This API applies multiple layers of security best practices:
+
+- Email verification required for write operations
+- Rate limiting tuned per route category
+- `Cache-Control: no-store` on authenticated API responses
+- Refresh token cleanup strategy for expired sessions
+- Helmet-based security headers
+- Server fingerprinting disabled (`x-powered-by`)
+- No public API documentation in production
+
+Security decisions are intentional and documented, not defaults.
 
 ---
 
@@ -272,6 +332,35 @@ pnpm db:push
 pnpm db:migrate
 pnpm db:studio
 ```
+
+---
+
+## 🧪 Testing Strategy
+
+- Integration-style API tests using **Vitest** and **Supertest**
+- Database reset between tests for isolation
+- Auth helpers for role-based test scenarios
+- Coverage includes:
+  - Authentication flows
+  - Role-based access control
+  - Posts, comments, and likes
+  - Admin-only operations
+
+Tests focus on **behavior and guarantees**, not implementation details.
+
+---
+
+## 🐳 Docker & Deployment
+
+The project includes a production-ready Docker setup:
+
+- Multi-stage Docker build
+- Non-root runtime user
+- Native dependency handling (Argon2)
+- Separate development and production configurations
+- Environment-driven database driver selection (pg / Neon)
+
+This allows the API to be deployed consistently across local, staging, and production environments.
 
 ---
 

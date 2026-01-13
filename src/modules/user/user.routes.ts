@@ -3,6 +3,8 @@ import { Router } from "express";
 import { requireAuth, requireRole } from "@/middlewares/auth.middleware.js";
 import { Role } from "@/constants/roles.js";
 import * as UserController from "./user.controller.js";
+import { validateParams } from "@/middlewares/validate.middleware.js";
+import { userIdParamSchema } from "./user.schema.js";
 
 const userRoutes = Router();
 
@@ -19,6 +21,7 @@ userRoutes.put(
   "/:userId",
   requireAuth,
   requireRole(Role.ADMIN),
+  validateParams(userIdParamSchema),
   UserController.adminUpdateUser
 );
 userRoutes.get(
