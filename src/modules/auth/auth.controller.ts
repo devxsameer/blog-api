@@ -4,8 +4,9 @@ import { loginSchema, signupSchema } from "./auth.schema.js";
 import * as AuthService from "./auth.service.js";
 import { refreshCookieOptions } from "@/utils/cookies.js";
 import { sendResponse } from "@/utils/api-response.js";
-import { UnauthorizedError } from "@/errors/http-errors.js";
+import { BadRequestError, UnauthorizedError } from "@/errors/http-errors.js";
 import { findUserById } from "@/modules/user/user.repository.js";
+import { verifyEmail } from "./email-verification.service.js";
 
 function getMeta(req: Request) {
   return {
@@ -73,6 +74,19 @@ export async function refresh(req: Request, res: Response) {
     data: {
       accessToken: accessToken,
     },
+  });
+}
+
+export async function verifyEmailController(req: Request, res: Response) {
+  const { token } = req.query;
+  if (!token || typeof token !== "string") {
+    throw new BadRequestError("Missing verification token");
+  }
+
+  await verifyEmail(token);
+
+  return sendResponse(res, {
+    message: "Email verified successfully",
   });
 }
 

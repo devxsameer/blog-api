@@ -19,6 +19,7 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import { NotFoundError } from "./errors/http-errors.js";
 import { swaggerHandler, swaggerMiddleware } from "./docs/swagger.js";
 import cookieParser from "cookie-parser";
+import userRoutes from "./modules/user/user.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,6 +29,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 /* ------------------------ SECURITY ----------------------- */
+app.disable("x-powered-by");
 app.use(securityMiddleware);
 
 /* ------------------------ CORS ----------------------- */
@@ -47,6 +49,7 @@ app.use("/api", (req, res, next) => {
 
 /* -------------------- ROUTES -------------------- */
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/dashboard", dashboardRoutes);

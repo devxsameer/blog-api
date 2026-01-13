@@ -11,6 +11,7 @@ import {
   hashToken,
 } from "./auth.utils.js";
 import { presentUser } from "../user/user.presenter.js";
+import { issueEmailVerification } from "./email-verification.service.js";
 
 const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000;
 
@@ -38,6 +39,13 @@ export async function signup(
   const passwordHash = await hashPassword(password);
 
   const [user] = await UserRepo.createUser({ username, email, passwordHash });
+
+  const verificationToken = await issueEmailVerification(user.id);
+
+  console.log(
+    `📧 Verify email: ${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`
+  );
+
   const { accessToken, refreshToken } = await issueTokens(user, meta);
 
   return {

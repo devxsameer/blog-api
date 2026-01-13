@@ -21,6 +21,7 @@ authRoutes.post(
   validateBody(loginSchema),
   AuthController.login
 );
+authRoutes.get("/verify-email", AuthController.verifyEmailController);
 authRoutes.post("/refresh", authRateLimit, AuthController.refresh);
 authRoutes.post("/logout", requireAuth, AuthController.logout);
 
