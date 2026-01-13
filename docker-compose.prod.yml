@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      target: runner
+    container_name: blog_api
+    ports:
+      - "6969:6969"
+    env_file:
+      - .env.production
+    environment:
+      NODE_ENV: production
+      PORT: 6969
+    restart: unless-stopped
