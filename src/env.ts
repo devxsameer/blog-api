@@ -9,6 +9,7 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   ACCESS_TOKEN_SECRET: z.string(),
   REFRESH_TOKEN_SECRET: z.string(),
+  DB_DRIVER: z.enum(["pg", "neon"]).default("neon"),
 });
 
 export const env = envSchema.parse(process.env);

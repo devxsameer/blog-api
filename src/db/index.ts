@@ -34,7 +34,7 @@ type AppDB = PgDatabase<
 
 let db: AppDB;
 
-if (env.NODE_ENV === "test") {
+if (env.DB_DRIVER === "pg") {
   const pool = new pg.Pool({
     connectionString: env.DATABASE_URL,
   });

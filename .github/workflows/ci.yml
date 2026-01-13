@@ -26,6 +26,7 @@ jobs:
           --health-retries=5
 
     env:
+      DB_DRIVER: pg
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/blog_api_test
       NODE_ENV: test
       ACCESS_TOKEN_SECRET: test-access-secret
