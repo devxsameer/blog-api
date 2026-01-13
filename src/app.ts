@@ -47,6 +47,16 @@ app.use("/api", (req, res, next) => {
   next();
 });
 
+/* -------------------- HEALTH CHECK -------------------- */
+app.get("/health", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: env.NODE_ENV,
+  });
+});
+
 /* -------------------- ROUTES -------------------- */
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
