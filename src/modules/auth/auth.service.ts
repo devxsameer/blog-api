@@ -46,7 +46,8 @@ export async function signup(
     `📧 Verify email: ${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`
   );
 
-  const { accessToken, refreshToken } = await issueTokens(user, meta);
+  const familyId = generateFamilyId();
+  const { accessToken, refreshToken } = await issueTokens(user, meta, familyId);
 
   return {
     user: presentUser(user),
@@ -72,7 +73,8 @@ export async function login(
     throw new UnauthorizedError("Invalid credentials");
   }
 
-  const { accessToken, refreshToken } = await issueTokens(user, meta);
+  const familyId = generateFamilyId();
+  const { accessToken, refreshToken } = await issueTokens(user, meta, familyId);
 
   return {
     user: presentUser(user),
@@ -95,7 +97,7 @@ export async function refresh(refreshToken: string, meta: RequestMeta) {
 
   await AuthRepo.revokeTokenFamily(stored.familyId);
 
-  return issueTokens(user, meta);
+  return issueTokens(user, meta, stored.familyId);
 }
 
 export async function logout(refreshToken: string) {
@@ -103,16 +105,15 @@ export async function logout(refreshToken: string) {
   await AuthRepo.revokeRefreshToken(tokenHash);
 }
 
-async function issueTokens(user: any, meta: RequestMeta) {
+async function issueTokens(user: any, meta: RequestMeta, familyId: string) {
   const accessToken = signAccessToken(user.id, user.role, user.isReadOnly);
 
   const refreshToken = generateOpaqueToken();
-  const familyId = generateFamilyId();
 
   await AuthRepo.saveRefreshToken({
     userId: user.id,
     tokenHash: hashToken(refreshToken),
-    familyId,
+    familyId: familyId,
     expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL),
     ipAddress: meta.ip,
     userAgent: meta.userAgent,

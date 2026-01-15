@@ -1,7 +1,7 @@
 // src/modules/auth/auth.repository.ts
 import { db } from "@/db/index.js";
 import { refreshTokensTable } from "@/db/schema/tokens.js";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gt, isNull } from "drizzle-orm";
 
 export function saveRefreshToken(data: {
   userId: string;
@@ -21,7 +21,8 @@ export function findValidRefreshToken(tokenHash: string) {
     .where(
       and(
         eq(refreshTokensTable.tokenHash, tokenHash),
-        isNull(refreshTokensTable.revokedAt)
+        isNull(refreshTokensTable.revokedAt),
+        gt(refreshTokensTable.expiresAt, new Date())
       )
     )
     .limit(1);
