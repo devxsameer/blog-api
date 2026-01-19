@@ -11,8 +11,8 @@ export function findUserById(id: string) {
       and(
         eq(usersTable.id, id),
         eq(usersTable.isActive, true),
-        isNull(usersTable.deletedAt)
-      )
+        isNull(usersTable.deletedAt),
+      ),
     )
     .limit(1);
 }
@@ -25,8 +25,8 @@ export function findUserByEmail(email: string) {
       and(
         eq(usersTable.email, email),
         eq(usersTable.isActive, true),
-        isNull(usersTable.deletedAt)
-      )
+        isNull(usersTable.deletedAt),
+      ),
     )
     .limit(1);
 }
@@ -52,13 +52,7 @@ export function createUser(data: {
 
 export function updateUser(
   userId: string,
-  data: Partial<{
-    username: string;
-    bio: string;
-    avatarUrl: string;
-    isActive: boolean;
-    role: "admin" | "author" | "user";
-  }>
+  data: Partial<typeof usersTable.$inferInsert>,
 ) {
   return db
     .update(usersTable)

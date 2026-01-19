@@ -1,6 +1,10 @@
 // src/modules/user/user.routes.ts
 import { Router } from "express";
-import { requireAuth, requireRole } from "@/middlewares/auth.middleware.js";
+import {
+  blockReadOnly,
+  requireAuth,
+  requireRole,
+} from "@/middlewares/auth.middleware.js";
 import { Role } from "@/constants/roles.js";
 import * as UserController from "./user.controller.js";
 import { validateParams } from "@/middlewares/validate.middleware.js";
@@ -12,22 +16,23 @@ userRoutes.get(
   "/",
   requireAuth,
   requireRole(Role.ADMIN),
-  UserController.adminListUsers
+  UserController.adminListUsers,
 );
 
-userRoutes.put("/me", requireAuth, UserController.updateMe);
+userRoutes.put("/me", requireAuth, blockReadOnly, UserController.updateMe);
 
 userRoutes.put(
   "/:userId",
   requireAuth,
   requireRole(Role.ADMIN),
+  blockReadOnly,
   validateParams(userIdParamSchema),
-  UserController.adminUpdateUser
+  UserController.adminUpdateUser,
 );
 userRoutes.get(
   "/me/avatar/upload",
   requireAuth,
-  UserController.getAvatarUpload
+  UserController.getAvatarUpload,
 );
 
 userRoutes.put("/me/avatar", requireAuth, UserController.updateAvatar);

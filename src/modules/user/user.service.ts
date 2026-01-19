@@ -6,7 +6,10 @@ import { AuthUser } from "@/@types/auth.js";
 import { cloudinary } from "@/config/cloudinary.js";
 import crypto from "node:crypto";
 
-export async function updateMe(user: AuthUser, input: any) {
+export async function updateMe(
+  user: AuthUser,
+  input: { username?: string; bio?: string },
+) {
   const [updated] = await UserRepo.updateUser(user.id, input);
   return updated;
 }
@@ -14,7 +17,10 @@ export async function updateMe(user: AuthUser, input: any) {
 export async function adminUpdateUser(
   admin: AuthUser,
   targetUserId: string,
-  input: any
+  input: {
+    username?: string;
+    bio?: string;
+  },
 ) {
   if (!canUpdateUser(admin, targetUserId)) {
     throw new ForbiddenError();
@@ -42,7 +48,7 @@ export function getAvatarUploadSignature(userId: string) {
       public_id: publicId,
       folder: "avatars",
     },
-    cloudinary.config().api_secret!
+    cloudinary.config().api_secret!,
   );
 
   return {
@@ -71,7 +77,7 @@ export async function adminListUsers(query: any) {
     pageInfo: {
       hasNextPage,
       nextCursor: hasNextPage
-        ? items[items.length - 1].createdAt?.toISOString() ?? null
+        ? (items[items.length - 1].createdAt?.toISOString() ?? null)
         : null,
     },
   };
