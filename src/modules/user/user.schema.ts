@@ -19,7 +19,7 @@ export const adminListUsersQuerySchema = z.object({
 });
 
 export const updateAvatarSchema = z.object({
-  avatarUrl: z.url(),
+  publicId: z.string(),
 });
 
 export const userIdParamSchema = z.object({

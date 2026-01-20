@@ -33,9 +33,9 @@ export async function adminUpdateUser(req: Request, res: Response) {
 }
 
 export async function updateAvatar(req: Request, res: Response) {
-  const { avatarUrl } = updateAvatarSchema.parse(req.body);
+  const { publicId } = updateAvatarSchema.parse(req.body);
 
-  const user = await UserService.updateAvatar(req.user!.id, avatarUrl);
+  const user = await UserService.updateAvatar(req.user!.id, publicId);
 
   return sendResponse(res, {
     message: "Profile picture updated",
@@ -44,11 +44,11 @@ export async function updateAvatar(req: Request, res: Response) {
 }
 
 export async function getAvatarUpload(req: Request, res: Response) {
-  const signatureData = UserService.getAvatarUploadSignature(req.user!.id);
+  const signature = UserService.getAvatarUploadSignature(req.user!.id);
 
   return sendResponse(res, {
     message: "Upload signature generated",
-    data: signatureData,
+    data: signature,
   });
 }
 

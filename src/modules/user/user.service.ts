@@ -4,7 +4,7 @@ import { ForbiddenError, NotFoundError } from "@/errors/http-errors.js";
 import { canUpdateUser } from "./user.policy.js";
 import { AuthUser } from "@/@types/auth.js";
 import { cloudinary } from "@/config/cloudinary.js";
-import crypto from "node:crypto";
+import { buildAvatarUrl } from "./user.utils.js";
 
 export async function updateMe(
   user: AuthUser,
@@ -32,32 +32,51 @@ export async function adminUpdateUser(
   return user;
 }
 
-export async function updateAvatar(userId: string, avatarUrl: string) {
+export async function updateAvatar(userId: string, publicId: string) {
+  const expectedPublicId = `blog/avatars/avatar_${userId}`;
+  if (publicId !== expectedPublicId) {
+    throw new ForbiddenError("Invalid avatar reference");
+  }
+
+  let resource;
+  try {
+    resource = await cloudinary.api.resource(publicId, {
+      resource_type: "image",
+    });
+  } catch {
+    throw new NotFoundError("Uploaded avatar not found");
+  }
+
+  const avatarUrl = buildAvatarUrl(resource, 256);
   const [user] = await UserRepo.updateUser(userId, { avatarUrl });
   return user;
 }
 
 export function getAvatarUploadSignature(userId: string) {
-  const timestamp = Math.floor(Date.now() / 1000);
+  const { cloud_name, api_key, api_secret } = cloudinary.config();
 
-  const publicId = `avatars/${userId}-${crypto.randomUUID()}`;
+  const timestamp = Math.floor(Date.now() / 1000);
+  const publicId = `avatar_${userId}`;
+
+  const paramsToSign = {
+    timestamp,
+    folder: "blog/avatars",
+    public_id: publicId,
+  };
 
   const signature = cloudinary.utils.api_sign_request(
-    {
-      timestamp,
-      public_id: publicId,
-      folder: "avatars",
-    },
-    cloudinary.config().api_secret!,
+    paramsToSign,
+    api_secret!,
   );
 
   return {
-    cloudName: cloudinary.config().cloud_name,
-    apiKey: cloudinary.config().api_key,
-    timestamp,
-    signature,
+    uploadUrl: `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+    fields: {
+      api_key,
+      signature,
+      ...paramsToSign,
+    },
     publicId,
-    uploadPreset: undefined,
   };
 }
 
